@@ -6,6 +6,16 @@ A self-hosted WeChat Mini Program for two people to record everyday life, plan s
 
 > This repository is a sanitized, reusable edition extracted from a deployed personal project. Production domains, WeChat credentials, template IDs, email authorization codes, personal names, private dates, and server settings have been removed. Screenshots show a customized instance; the public template uses placeholders.
 
+## Try it in WeChat
+
+Scan the Mini Program code below with WeChat to try “他山梦玉” (Ta Shan Meng Yu). You can also save the image to your phone and recognize it in WeChat.
+
+<p align="center">
+  <img src="docs/screenshots/miniprogram-code.png" width="240" alt="Ta Shan Meng Yu Mini Program code: scan with WeChat">
+</p>
+
+Visitors can browse first; editing the couple space requires login and activation. This code opens the author's deployed Mini Program. Replace it with your own code when deploying an independent instance.
+
 ## Screenshots
 
 | Home and calendar | Menu and orders | Shared todos |
