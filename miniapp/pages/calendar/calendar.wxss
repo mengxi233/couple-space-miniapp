@@ -1,0 +1,2 @@
+page{background:#fbf8f5}.placeholder{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#806a64}.icon{width:110rpx;height:110rpx;line-height:110rpx;border-radius:35rpx;background:#ead8d1;color:#a8776a;text-align:center;font-size:42rpx}.title{margin-top:30rpx;font-size:40rpx;font-weight:600}.desc{margin-top:15rpx;color:#a8948e}.hint{margin-top:70rpx;color:#bdaaa3;font-size:24rpx}
+.placeholder{padding-left:36rpx;padding-right:36rpx}

@@ -1,0 +1,16 @@
+<view class="export-page">
+  <view class="back" bindtap="back"><van-icon name="arrow-left" /> 大事纪年表</view>
+  <text class="eyebrow">OUR MILESTONES</text>
+  <text class="title">时间线长图</text>
+  <text class="hint">按{{order === 'asc' ? '最早在前' : '最新在前'}}导出{{query ? '搜索“' + query + '”的' : '全部'}}记录，包含文字、照片及链接，生成一张完整长图。</text>
+  <text class="hint">导出后包含私人记录，请谨慎分享。视频以链接文字保留，不嵌入视频。</text>
+  <van-button wx:if="{{!path}}" type="primary" block round loading="{{busy}}" disabled="{{busy}}" bindtap="generate">{{busy ? status : '生成长图'}}</van-button>
+  <text wx:if="{{error}}" class="error">{{error}}</text>
+  <block wx:if="{{path}}">
+    <text class="hint">已生成 {{count}} 条记录 · 点击图片可放大查看</text>
+    <image class="poster" src="{{path}}" mode="widthFix" bindtap="preview" />
+    <van-button type="primary" block round loading="{{saving}}" disabled="{{saving}}" bindtap="save">保存到相册</van-button>
+    <van-button plain type="primary" block round bindtap="preview">放大预览</van-button>
+  </block>
+  <canvas type="2d" id="posterCanvas" class="hidden-canvas" />
+</view>

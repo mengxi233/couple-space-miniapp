@@ -1,0 +1,8 @@
+<view class="header" style="padding-top:{{top}}px">
+  <view class="navigation" style="height:{{height}}px;padding-right:{{right}}px">
+    <view wx:if="{{backLabel}}" class="back" bindtap="back">‹ {{backLabel}}</view>
+    <text wx:else class="eyebrow">{{eyebrow}}</text>
+  </view>
+  <view class="title-row"><text class="title">{{title}}</text><view class="actions"><slot name="actions" /></view></view>
+  <text wx:if="{{subtitle}}" class="subtitle">{{subtitle}}</text>
+</view>

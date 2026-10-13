@@ -1,0 +1,17 @@
+<view class="notifications-page">
+  <view class="page-head">
+    <van-icon name="arrow-left" size="23px" color="#6e555a" bindtap="goBack" />
+    <view class="head-copy"><text class="eyebrow">LITTLE NOTES</text><text class="title">通知</text></view>
+    <van-button wx:if="{{notifications.length}}" size="mini" plain color="#c97982" round bindtap="markAllRead">全部已读</van-button>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading"><van-loading color="#c97982" vertical>正在收好消息</van-loading></view>
+  <van-empty wx:elif="{{!notifications.length}}" image="default" description="暂时没有新的消息" />
+  <view wx:else class="notice-list">
+    <view wx:for="{{notifications}}" wx:key="id" class="notice-card {{item.isRead ? 'read' : ''}}" data-id="{{item.id}}" bindtap="openNotification">
+      <view class="notice-icon"><van-icon name="{{item.iconName || 'bell'}}" size="22px" color="#c97982" /></view>
+      <view class="notice-copy"><view class="notice-title-row"><text class="notice-title">{{item.title}}</text><van-tag wx:if="{{!item.isRead}}" round color="#f4c4c6" text-color="#a9656d">未读</van-tag></view><text class="notice-content">{{item.content}}</text><text class="notice-time">{{item.createdAt}}</text></view>
+      <van-icon wx:if="{{!item.isRead}}" name="arrow" size="16px" color="#d9b0b0" />
+    </view>
+  </view>
+</view>

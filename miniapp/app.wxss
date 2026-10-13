@@ -1,0 +1,16 @@
+/**app.wxss**/
+@import './assets/vant-icon-font.wxss';
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+} 
+/* Shared visual foundation */
+page{--rose:#c97982;--rose-soft:#fff0ef;--ink:#4b3c3b;--muted:#a89491;--surface:#fff;--line:#f4e5e5;--radius-lg:28rpx;--button-primary-background-color:#c97982;--button-primary-border-color:#c97982;--button-info-background-color:#c97982;--button-info-border-color:#c97982;--button-default-color:#b8757e;--button-default-border-color:#ecd5d9;--button-danger-background-color:#b85c70;--button-danger-border-color:#b85c70;--button-border-radius:12px}
+page{background:#fff8f6;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif}
+van-button{--button-primary-background-color:#c97982;--button-primary-border-color:#c97982;--button-info-background-color:#c97982;--button-info-border-color:#c97982}

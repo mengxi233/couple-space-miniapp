@@ -1,0 +1,22 @@
+<view class="timeline-page">
+  <view class="back" bindtap="back"><van-icon name="arrow-left" /> 应用</view>
+  <text class="eyebrow">OUR MILESTONES</text><text class="page-title">大事纪年表</text>
+  <text class="subtitle">把值得记住的时刻，串成我们的故事</text>
+  <view class="toolbar"><text bindtap="toggleOrder">{{order === 'desc' ? '最新在前 ↓' : '最早在前 ↑'}}</text><van-button wx:if="{{canEdit}}" type="primary" size="small" round icon="plus" bindtap="add">记录大事</van-button></view>
+  <van-search value="{{query}}" placeholder="搜索标题、描述或详情" background="transparent" bind:change="onQuery" bind:search="search" bind:clear="clearSearch" />
+  <van-button wx:if="{{canEdit}}" plain type="primary" size="small" icon="photo-o" bindtap="exportImage">导出时间线长图</van-button>
+  <view wx:if="{{error}}" class="state"><text>{{error}}</text><van-button size="small" bindtap="{{blocked ? 'login' : 'search'}}">{{blocked ? '登录 / 绑定身份' : '重新加载'}}</van-button></view>
+  <view class="timeline">
+    <view wx:for="{{events}}" wx:key="id" class="node">
+      <view class="dot"></view><text class="date">{{item.date}} {{item.time}}</text>
+      <view class="event-card" data-id="{{item.id}}" bindtap="open">
+        <text class="event-title">{{item.title}}</text><text wx:if="{{item.description}}" class="description">{{item.description}}</text>
+        <image wx:if="{{item.images.length}}" class="cover" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
+        <view class="card-foot"><text>{{item.images.length ? item.images.length + ' 张照片 · ' : ''}}{{item.videoUrl ? '视频链接 · ' : ''}}{{item.linkUrl ? '相关链接 · ' : ''}}查看详情</text><van-icon name="arrow" /></view>
+      </view>
+    </view>
+  </view>
+  <van-empty wx:if="{{!loading && !error && !events.length}}" description="{{query ? '没有找到相关事件' : '还没有大事记录，留下第一个时刻吧'}}" />
+  <text wx:if="{{loading}}" class="loading">正在加载…</text>
+  <van-button wx:if="{{hasMore}}" block plain loading="{{loading}}" bindtap="more">加载更多</van-button>
+</view>

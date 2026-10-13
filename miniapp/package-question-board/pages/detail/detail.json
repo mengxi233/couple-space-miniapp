@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "问题详情",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "van-icon": "/miniprogram_npm/@vant/weapp/icon/index",
+    "van-button": "/miniprogram_npm/@vant/weapp/button/index",
+    "van-uploader": "/miniprogram_npm/@vant/weapp/uploader/index",
+    "van-loading": "/miniprogram_npm/@vant/weapp/loading/index",
+    "van-slider": "/miniprogram_npm/@vant/weapp/slider/index"
+  }
+}

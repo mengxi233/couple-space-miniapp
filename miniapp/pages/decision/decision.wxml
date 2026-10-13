@@ -1,0 +1,22 @@
+<page-meta page-style="{{dragId ? 'overflow:hidden;' : ''}}" />
+<view wx:if="{{authorized}}" class="tool-page {{pageReady ? 'page-ready' : 'page-preparing'}}">
+  <page-header back-label="应用" title="做个决定" subtitle="每个不同选项机会相同，适合生活小选择。" bind:back="back" />
+  <view class="wheel-wrap"><canvas type="2d" id="wheel" class="wheel" style="opacity:{{pageReady ? 1 : 0}}" /><text wx:if="{{renderError}}" class="render-error">{{renderError}}</text></view>
+  <view class="result">{{spinning ? '让好运转一会儿…' : result || '今天，让转盘帮你选'}}</view>
+  <text wx:if="{{shared}}" class="hint">好友分享的{{selectedResult ? '结果和' : ''}}选项 · 你也可以再转一次</text>
+  <van-button type="primary" block round disabled="{{spinning}}" loading="{{spinning}}" bindtap="spin">转一下</van-button>
+  <view class="share-row"><button class="share-button" open-type="share" disabled="{{spinning || dragId || shareError}}">分享{{selectedResult ? '选项和结果' : '选项'}}给好友</button></view>
+  <text class="hint">{{shareError || '好友打开可查看本组选项和结果。分享内容不包含账号、历史记录；收到的人可继续转发。'}}</text>
+  <view class="card"><text class="label">我的选项</text><view class="presets"><text wx:for="{{presets}}" wx:key="name" data-index="{{index}}" bindtap="preset">{{item.name}}</text></view><view class="option-list">
+      <view wx:for="{{optionCards}}" wx:key="id" class="option-card {{dragId === item.id ? 'dragging' : ''}} {{dragId && dropIndex === index && dragId !== item.id ? 'drop-target' : ''}}" style="{{dragId === item.id ? 'transform:translateY(' + dragOffset + 'px);' : ''}}">
+        <view class="option-heading"><text class="option-number">选项 {{index + 1}}</text><view class="option-actions">
+          <view class="compact-action {{spinning || optionCards.length <= 2 ? 'disabled' : ''}}" data-id="{{item.id}}" bindtap="removeOption" aria-label="删除选项"><van-icon name="cross" size="16px" /></view>
+          <view class="drag-handle {{spinning ? 'disabled' : ''}}" data-id="{{item.id}}" catchtouchstart="dragStart" catchtouchmove="dragMove" catchtouchend="dragEnd" catchtouchcancel="cancelDrag" aria-label="按住拖动排序">≡</view>
+        </view></view>
+        <input class="option-input" value="{{item.value}}" maxlength="24" disabled="{{spinning}}" data-id="{{item.id}}" bindinput="editOption" placeholder="写下一个选择，最多 24 个字" />
+      </view>
+    </view>
+    <van-button plain type="primary" block round size="small" icon="plus" disabled="{{spinning || optionCards.length >= 20}}" bindtap="addOption">添加选项（{{optionCards.length}} / 20）</van-button>
+    <text class="hint">按住卡片右侧 ≡ 拖动排序，松手确认；选项较多时先滑动页面。至少保留两项。</text><view class="switch-row"><text>不重复抽取</text><switch color="#c97982" checked="{{unique}}" disabled="{{spinning}}" bindchange="unique" /></view><text class="hint">开启后，本轮已抽中的选项暂不参与；全部抽完可重新开始。</text><text class="link" bindtap="reset">重新开始一轮</text></view>
+  <view wx:if="{{history.length}}" class="card"><view class="switch-row"><text class="label">最近决定</text><text class="link" bindtap="clear">清空</text></view><view wx:for="{{history}}" wx:key="id" class="history"><text>{{item.result}}</text><text>{{item.time}}</text></view></view>
+</view>

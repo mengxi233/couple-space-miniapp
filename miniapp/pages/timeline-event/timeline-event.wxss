@@ -1,0 +1,23 @@
+page{background:#fff7f8;color:#493c40;--button-primary-background-color:#c97982;--button-primary-border-color:#c97982}.event-page{padding:calc(100px + env(safe-area-inset-top)) 30rpx calc(50rpx + env(safe-area-inset-bottom))}.back{font-size:25rpx;color:#b8757e;margin-bottom:28rpx}.page-title{display:block;font-size:44rpx;font-weight:600;margin-bottom:28rpx}.card{background:#fff;padding:28rpx 22rpx;border-radius:26rpx}.picker-row{display:flex;justify-content:space-between;align-items:center;gap:18rpx;padding:25rpx 10rpx;border-bottom:1rpx solid #f5e8e7;font-size:25rpx;color:#806a70}.picker-row picker{flex:1}.accent,.date{color:#c27480}.date{font-size:26rpx}.event-title{display:block;font-size:38rpx;font-weight:600;line-height:1.5;margin:16rpx 0;overflow-wrap:anywhere}.description{display:block;color:#9c8489;font-size:27rpx;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.details{display:block;margin-top:25rpx;color:#66514f;font-size:27rpx;line-height:1.85;white-space:pre-wrap;overflow-wrap:anywhere}.photos{padding:25rpx 8rpx}.label{display:block;margin-bottom:20rpx;color:#806a70;font-size:25rpx}.hint{display:block;color:#b49b9f;font-size:22rpx;line-height:1.7;margin:20rpx 10rpx}.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14rpx;margin-top:24rpx}.photo-grid image{width:100%;height:230rpx;border-radius:16rpx;background:#fff0f0}.link-card{display:flex;align-items:center;gap:18rpx;padding:22rpx 16rpx;border-radius:16rpx;background:#fff7f8;color:#b8757e;font-size:24rpx;margin-top:20rpx}.link-card>view{min-width:0;flex:1}.url{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:21rpx;color:#b49b9f;margin-top:8rpx}
+/* Native view wrappers control layout across the Vant component boundary. */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 32rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #f5e8e7;
+}
+.action-item {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+.media-action {
+  display: flex;
+  margin: 20rpx 8rpx 0;
+}
+/* Videos are mounted only after the user presses play. */
+.event-video{display:block;width:100%;height:380rpx;margin-top:24rpx;border-radius:18rpx;background:#241e20}

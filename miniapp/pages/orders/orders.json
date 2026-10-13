@@ -1,0 +1,13 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "van-icon": "/miniprogram_npm/@vant/weapp/icon/index",
+    "van-button": "/miniprogram_npm/@vant/weapp/button/index",
+    "van-loading": "/miniprogram_npm/@vant/weapp/loading/index",
+    "van-empty": "/miniprogram_npm/@vant/weapp/empty/index",
+    "van-popup": "/miniprogram_npm/@vant/weapp/popup/index",
+    "van-tag": "/miniprogram_npm/@vant/weapp/tag/index",
+    "van-field": "/miniprogram_npm/@vant/weapp/field/index",
+    "van-uploader": "/miniprogram_npm/@vant/weapp/uploader/index"
+  }
+}

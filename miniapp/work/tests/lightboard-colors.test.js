@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm')
+const colors=require('../../services/color-picker'),apps=require('../../services/little-apps')
+assert.equal(colors.hex([255,0,128]),'#ff0080')
+assert.deepEqual(colors.channels('#ff0080'),[255,0,128])
+assert.equal(colors.hex([-3,300,10]),'#00ff0a')
+assert.equal(apps.board({backgroundImage:'wxfile://store/photo.jpg'}).backgroundImage,'wxfile://store/photo.jpg')
+assert.equal(apps.board({backgroundImage:'https://example.com/private.jpg'}).backgroundImage,'')
+let definition,stored,saved=0,oversize=false
+vm.runInNewContext(fs.readFileSync('pages/lightboard/lightboard.js','utf8'),{Page:v=>definition=v,require:p=>p.endsWith('color-picker')?colors:apps,wx:{chooseMedia:o=>o.success({tempFiles:[{tempFilePath:'temp.jpg',size:oversize?11*1024*1024:100}]}),saveFile:o=>{saved++;o.success({savedFilePath:'wxfile://store/photo.jpg'});o.complete()},setStorageSync:(k,v)=>stored=v,removeSavedFile(){},showToast(){}}})
+const page={...definition,data:structuredClone(definition.data),setData(p){for(const [k,v]of Object.entries(p)){if(k.startsWith('form.'))this.data.form[k.slice(5)]=v;else this.data[k]=v}}}
+page.openColor({currentTarget:{dataset:{field:'fg'}}});page.pickChannel({currentTarget:{dataset:{index:0}},detail:{value:0}});page.confirmColor();assert.equal(page.data.form.fg,'#00ffff')
+page.chooseBackground();assert.equal(stored.backgroundImage,'wxfile://store/photo.jpg');assert.equal(page.data.choosingBackground,false)
+oversize=true;page.chooseBackground();assert.equal(saved,1)
+page.clearBackground();assert.equal(page.data.form.backgroundImage,'')
+console.log('Color and background tests passed: RGB picker, local image persistence, size limit, restore solid color.')

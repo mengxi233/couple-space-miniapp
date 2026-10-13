@@ -1,0 +1,143 @@
+<page-meta page-style="{{showEventEditor ? 'overflow: hidden;' : ''}}" />
+<view class="page">
+  <page-header eyebrow="COUPLE SPACE" title="伴侣空间" subtitle="一起记录，属于我们的每一天"><text slot="actions" class="role" bindtap="goLogin">{{roleText}}</text></page-header>
+
+  <swiper wx:if="{{banners.length}}" class="banner" indicator-dots="{{banners.length > 1}}" autoplay="{{banners.length > 1}}" circular="{{banners.length > 1}}" interval="4200">
+    <block wx:for="{{banners}}" wx:key="id">
+      <swiper-item><progressive-image class="banner-image" src="{{item.url}}" fallback="/assets/previews/banner-1.jpg" mode="aspectFill" /></swiper-item>
+    </block>
+  </swiper>
+
+  <view class="card time-card">
+    <view class="couple-avatars">
+      <view wx:for="{{avatars}}" wx:key="id" class="avatar-wrap">
+        <progressive-image class="avatar" src="{{item.url}}" fallback="{{item.id === 'member' ? '/assets/previews/avatar-meng.jpg' : '/assets/previews/avatar-yu.jpg'}}" mode="aspectFill" />
+        <text>{{item.name}}</text>
+      </view>
+      <van-icon name="like" color="#c97982" size="24px" class="heart-between" />
+    </view>
+    <text class="card-label">相恋时间</text>
+    <text class="time">{{loveTime}}</text>
+    <text class="muted">从 2026 年 8 月 8 日开始，每一秒都算数</text>
+  </view>
+
+  <view class="card calendar-card">
+    <view class="calendar-head">
+      <view>
+        <text class="card-label">日历记录</text>
+        <text class="calendar-subtitle">把今天的心情收藏起来</text>
+      </view>
+      <view class="month-switch">
+        <van-icon name="arrow-left" color="#c97982" size="18px" bindtap="previousMonth" />
+        <text class="calendar-month">{{calendarTitle}}</text>
+        <van-icon name="arrow" color="#c97982" size="18px" bindtap="nextMonth" />
+      </view>
+    </view>
+
+    <view wx:if="{{canEdit}}" class="calendar-subscription">
+      <text class="subscription-title">对方的新记录，不错过</text>
+      <text class="subscription-hint">{{calendarSubscriptionHint}}</text>
+      <view class="subscription-actions">
+        <van-button type="primary" size="small" round loading="{{subscribingCalendar}}" disabled="{{subscribingCalendar}}" custom-style="width:auto;min-width:0;max-width:100%;height:34px;margin:0;padding:0 14px;white-space:nowrap;" bindtap="subscribeCalendar">订阅下次消息</van-button>
+        <button wx:if="{{calendarWechat.enabled}}" class="subscription-stop" disabled="{{subscribingCalendar}}" bindtap="stopCalendarSubscription">暂停提醒</button>
+      </view>
+      <text class="subscription-note">双方分别订阅，每次同意可接收一条。新增记录后通常约一分钟内发送；纪念日订阅和邮件独立保留。摘要将显示在微信服务通知中。</text>
+    </view>
+    <view class="week-row"><text wx:for="{{weekDays}}" wx:key="*this">{{item}}</text></view>
+    <view class="day-grid">
+      <view wx:for="{{calendarDays}}" wx:key="index"
+        class="day {{item.muted ? 'muted-day' : ''}} {{item.today ? 'today' : ''}} {{item.selected ? 'selected' : ''}} {{item.eventCount ? 'has-event' : ''}}"
+        data-date="{{item.date}}" bindtap="selectDay">
+        <text class="day-number">{{item.day}}</text>
+        <text wx:if="{{item.marked}}" class="heart-dot">♥</text>
+        <text wx:elif="{{item.eventCount}}" class="event-dot">•</text>
+      </view>
+    </view>
+
+    <view class="selected-note">
+      <van-icon name="notes-o" color="#c97982" size="16px" />
+      <text>{{selectedDateLabel}} · {{selectedEvents.length ? '有 ' + selectedEvents.length + ' 条记录' : '还没有记录'}}</text>
+    </view>
+    <van-button type="primary" size="small" block custom-class="add-event" bindtap="openAddEvent">
+      <van-icon name="edit" size="16px" /> 记录这一天
+    </van-button>
+
+    <view wx:if="{{selectedEvents.length}}" class="event-list">
+      <view wx:for="{{selectedEvents}}" wx:key="id" class="event-row">
+        <view class="event-main" bindtap="openEditEvent" data-id="{{item.id}}">
+          <view class="event-title-line">
+            <text class="event-title">{{item.title || '日记'}}</text>
+            <text class="visibility">{{item.isPublic ? '公开' : '私密'}}</text>
+          </view>
+          <view class="event-meta">
+            <text class="event-time">{{item.recordTimeLabel === '时间未记录' ? item.recordTimeLabel : '记录于 ' + item.recordTimeLabel}}</text>
+            <text class="event-mood-label">{{item.mood}}</text>
+            <text wx:if="{{item.localOnly}}" class="event-time">仅本机</text>
+          </view>
+          <view class="event-editor-meta">
+            <text>{{item.editorLabel}}{{item.localOnly ? '（本机未同步）' : ''}}</text>
+            <text wx:if="{{item.updatedTimeLabel}}">修改于 {{item.updatedTimeLabel}}</text>
+          </view>
+          <text wx:if="{{item.content}}" class="event-text">{{item.content}}</text>
+          <text wx:if="{{item.linkUrl}}" class="event-link" data-url="{{item.linkUrl}}" catchtap="openEventLink">{{item.linkUrl}}</text>
+          <image wx:if="{{item.imageUrl}}" class="event-image" src="{{item.imageUrl}}" mode="aspectFill" data-url="{{item.imageUrl}}" catchtap="previewEventImage" />
+        </view>
+        <view wx:if="{{canEdit}}" class="event-actions">
+          <van-icon name="edit" color="#c97982" size="18px" data-id="{{item.id}}" bindtap="openEditEvent" />
+          <van-icon name="delete-o" color="#c9aaa4" size="18px" data-id="{{item.id}}" bindtap="deleteEvent" />
+        </view>
+      </view>
+    </view>
+    <van-empty wx:else image="default" description="这一天还没有记录" custom-class="calendar-empty" />
+  </view>
+
+  <view class="stats">
+    <view class="stat"><text class="stat-value">{{user.nickname || '访客'}}</text><text class="muted">当前用户</text></view>
+    <view class="stat"><text class="stat-value">{{points}}</text><text class="muted">积分</text></view>
+    <view class="stat"><text class="stat-value">{{events.length}}</text><text class="muted">公开记录</text></view>
+  </view>
+
+  <view class="section-title"><text>今日想做的事</text><text class="link" bindtap="goTasks">查看全部</text></view>
+  <view class="card empty-card" bindtap="goTasks"><text class="empty-icon">♡</text><text>把第一件小事记录下来吧</text><text class="muted">事项记录</text></view>
+  <app-tabbar current="0" />
+</view>
+
+<!-- Use a bounded scroll viewport; padding belongs to its inner content. -->
+<van-popup show="{{showEventEditor}}" position="bottom" round closeable lock-scroll safe-area-inset-bottom="{{false}}" custom-style="height:88vh;overflow:hidden;" bind:close="closeEventEditor">
+  <scroll-view class="event-editor" scroll-y enhanced show-scrollbar="{{false}}">
+    <view class="event-editor-content">
+    <view class="editor-title">{{editingEventId ? '编辑这一天' : '记录这一天'}}</view>
+    <text class="editor-date">{{eventFormDateLabel}}</text>
+
+    <van-field label="标题" placeholder="例如：一起看了电影" value="{{eventFormTitle}}" maxlength="40" clearable bind:change="onTitleInput" />
+    <van-field label="内容" type="textarea" autosize rows="3" maxlength="500" show-word-limit placeholder="写下今天的故事、心情或想说的话" value="{{eventFormContent}}" bind:change="onContentInput" />
+    <van-field label="链接" placeholder="可选，例如一篇文章或一首歌" value="{{eventFormLink}}" maxlength="500" clearable bind:change="onLinkInput" />
+
+    <view class="form-section">
+      <text class="form-label">今天的心情</text>
+      <view class="mood-list">
+        <view wx:for="{{moodOptions}}" wx:key="value" class="mood-option {{!customMoodSelected && item.value === eventFormMood ? 'active' : ''}}" data-mood="{{item.value}}" bindtap="selectMood">
+          <text class="mood-emoji">{{item.value}}</text><text class="mood-label">{{item.label}}</text>
+        </view>
+        <view class="mood-option {{customMoodSelected ? 'active' : ''}}" bindtap="selectCustomMood">
+          <van-icon name="edit" size="20px" color="#c97982" /><text class="mood-label">自定义</text>
+        </view>
+      </view>
+      <van-field wx:if="{{customMoodSelected}}" label="我的心情" placeholder="例如：有点累，但很幸福 🥰" value="{{customMood}}" maxlength="16" clearable bind:change="onCustomMoodInput" />
+    </view>
+
+    <view class="form-section image-section">
+      <text class="form-label">添加照片</text>
+      <van-uploader file-list="{{eventImageList}}" max-count="1" preview-size="88px" upload-icon="photograph" bind:after-read="afterRead" bind:delete="deleteImage" />
+      <text class="form-hint">照片会安全上传到服务器并同步给对方；断网时先保存在本机</text>
+    </view>
+
+    <view class="public-row">
+      <view><text class="form-label">对访客公开</text><text class="form-hint">访客只能看到公开的记录</text></view>
+      <switch checked="{{eventFormPublic}}" color="#c97982" bindchange="togglePublic" />
+    </view>
+    <van-button type="primary" block loading="{{savingEvent}}" custom-class="save-event" bindtap="saveEvent">保存记录</van-button>
+    <view class="editor-bottom-space"></view>
+    </view>
+  </scroll-view>
+</van-popup>

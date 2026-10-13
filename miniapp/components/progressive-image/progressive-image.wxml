@@ -1,0 +1,4 @@
+<view class="frame">
+  <image class="layer" src="{{preview}}" mode="{{mode}}" />
+  <image wx:for="{{resources}}" wx:key="id" class="layer full {{ready ? 'ready' : ''}}" src="{{item.url}}" mode="{{mode}}" data-id="{{item.id}}" bindload="loaded" binderror="failed" />
+</view>

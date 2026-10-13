@@ -1,0 +1,16 @@
+<view class="page">
+ <view wx:if="{{stats}}" class="card"><text class="title">全部房间资源</text><view class="metrics"><view class="metric"><text>{{stats.rooms}} / 100</text>活跃房间</view><view class="metric"><text>{{stats.members}}</text>已加入席位</view><view class="metric"><text>{{stats.online}}</text>在线横屏</view></view>
+ <view class="row"><text>文字图片合计</text><text>{{stats.spriteSize}}</text></view><view class="row"><text>房间状态数据</text><text>{{stats.stateSize}}</text></view><view class="row"><text>数据库磁盘占用</text><text>{{stats.databaseSize}}</text></view><view class="row"><text>可复用空闲空间</text><text>{{stats.reusableSize}}</text></view><view class="row"><text>数据库临时日志</text><text>{{stats.journalSize}}</text></view><text class="hint">数据库磁盘占用已包含状态、图片及空闲页，不要重复相加。退出页面停止刷新；管理员查看不延长房间寿命。</text></view>
+ <view class="row"><text>闲置 20 分钟或满 4 小时回收</text><van-button size="small" plain type="primary" round loading="{{loading}}" bindtap="refresh">刷新</van-button></view>
+ <text wx:if="{{error}}" class="hint error">{{error}}</text>
+ <view wx:for="{{rooms}}" wx:key="id" class="card"><view class="row"><text>{{item.mode==='sync'?'同步播放':'拼接延长'}} · {{item.memberCount}} / 6 人</text><text>{{item.state==='playing'?'播放中':'已暂停'}}{{item.pending?' · 指令待生效':''}}</text></view><text class="code" selectable>{{item.id}}</text><text class="content">{{item.text}}</text><text class="hint">房主：{{item.ownerName}} · 在线横屏 {{item.onlineCount}} 人</text><text class="hint">成员：{{item.memberNames || '尚无成员'}}</text><view class="row"><text>图片 / 状态</text><text>{{item.spriteSize}} / {{item.stateSize}}</text></view><text class="hint">创建：{{item.createdText}}
+最近活动：{{item.activeText}}
+预计回收：{{item.reclaimText}}</text><view class="actions"><van-button plain type="primary" round size="small" block data-id="{{item.id}}" bindtap="copyCode">复制房间码</van-button><van-button plain type="primary" round size="small" block data-id="{{item.id}}" bindtap="observe">进入查看</van-button><van-button plain type="primary" round size="small" block data-id="{{item.id}}" bindtap="join">加入播放</van-button><van-button plain type="danger" round size="small" block disabled="{{closing}}" data-id="{{item.id}}" bindtap="closeRoom">关闭房间</van-button></view></view>
+ <view wx:if="{{!rooms.length && !loading && !error}}" class="empty">当前没有活跃房间</view>
+ <view class="pagination">
+  <van-button class="pagination-button" custom-style="display:inline-flex;align-items:center;justify-content:center;width:auto;min-width:0;height:32px;line-height:30px;padding:0 14px;margin:0;white-space:nowrap;" size="small" type="primary" plain round disabled="{{page<=1 || loading}}" bindtap="previous">上一页</van-button>
+  <text class="pagination-count">{{page}} / {{pages}} 页</text>
+  <van-button class="pagination-button" custom-style="display:inline-flex;align-items:center;justify-content:center;width:auto;min-width:0;height:32px;line-height:30px;padding:0 14px;margin:0;white-space:nowrap;" size="small" type="primary" plain round disabled="{{page>=pages || loading}}" bindtap="next">下一页</van-button>
+ </view>
+ <text class="hint">“进入查看”是管理员旁观，不占席位，满员和播放中也可查看。“加入播放”使用本机访客身份，仍需房间有空位且已暂停。</text>
+</view>

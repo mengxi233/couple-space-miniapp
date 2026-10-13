@@ -1,0 +1,39 @@
+<view class="soundboard-page theme-{{themeKey}}">
+  <page-header back-label="应用" title="六键音乐挂件" subtitle="选一个主题，按下圆键播放音乐。" bind:back="back" />
+
+  <view class="theme-switch" aria-label="选择主题">
+    <view class="theme-option {{themeKey === 'male' ? 'active' : ''}}" data-theme="male" bindtap="switchTheme"><text class="theme-dot male-dot"></text><text>我是男主</text></view>
+    <view class="theme-option {{themeKey === 'female' ? 'active' : ''}}" data-theme="female" bindtap="switchTheme"><text class="theme-dot female-dot"></text><text>我是女主</text></view>
+  </view>
+
+  <view class="toy-wrap">
+    <view class="keyring"><view class="ring-large"></view><view class="ring-link"></view></view>
+    <view class="toy-shell">
+      <view class="button-row top-row">
+        <block wx:for="{{tracks}}" wx:key="key"><view wx:if="{{index < 3}}" class="sound-key {{currentIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="playTrack" hover-class="sound-key-pressed" hover-stay-time="120" role="button" aria-label="播放曲目 {{index + 1}}"></view></block>
+      </view>
+
+      <view class="hero-stage">
+        <image class="hero-image hero-left" src="{{theme.portraits[0]}}" mode="aspectFit" />
+        <view class="hero-copy"><text class="hero-small">重生之</text><text class="hero-title">{{themeKey === 'male' ? '我是男主' : '我是女主'}}</text><text class="hero-badge">{{theme.badge}}</text></view>
+        <image class="hero-image hero-right" src="{{theme.portraits[1]}}" mode="aspectFit" />
+      </view>
+
+      <view class="button-row bottom-row">
+        <block wx:for="{{tracks}}" wx:key="key"><view wx:if="{{index >= 3}}" class="sound-key {{currentIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="playTrack" hover-class="sound-key-pressed" hover-stay-time="120" role="button" aria-label="播放曲目 {{index + 1}}"></view></block>
+      </view>
+      <view class="shell-shine"></view>
+    </view>
+  </view>
+
+  <view class="player-card">
+    <view class="track-info"><view class="album-dot {{playing ? 'spinning' : ''}}"><view class="album-hole"></view></view><view class="track-copy"><text class="track-title">{{currentTrack.title}}</text><text class="track-state">{{loading ? '正在加载' : (playing ? '正在播放' : (currentIndex >= 0 ? '已暂停' : cacheText))}}</text></view></view>
+    <slider class="progress-slider" value="{{progress}}" min="0" max="100" block-size="14" activeColor="{{themeKey === 'male' ? '#6da8ca' : '#d982a2'}}" backgroundColor="#eadde1" bindchange="seek" />
+    <view class="time-row"><text>{{currentTimeText}}</text><text>{{durationText}}</text></view>
+    <view class="player-controls">
+      <view class="control-button side-control" bindtap="previousTrack" hover-class="control-pressed" role="button" aria-label="上一首"><text>◀</text></view>
+      <view class="control-button main-control" bindtap="togglePlayback" hover-class="control-pressed" role="button" aria-label="{{playing ? '暂停' : '播放'}}"><view wx:if="{{playing}}" class="pause-icon"><text></text><text></text></view><text wx:else class="play-icon">▶</text></view>
+      <view class="control-button side-control" bindtap="nextTrack" hover-class="control-pressed" role="button" aria-label="下一首"><text>▶</text></view>
+    </view>
+  </view>
+</view>

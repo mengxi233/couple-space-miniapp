@@ -1,0 +1,19 @@
+<view class="cart-page">
+  <view class="page-head"><van-icon name="arrow-left" size="23px" color="#6e555a" bindtap="goBack"/><view><text class="eyebrow">MY CART</text><text class="title">购物车</text></view><view class="head-spacer"/></view>
+  <view wx:if="{{!loggedIn || !canOrder}}" class="need-login"><van-icon name="shopping-cart-o" size="62px" color="#e4a7ad"/><text class="need-title">登录后和爱的人一起点单</text><text class="need-desc">绑定情侣空间后，才可以把喜欢的料理放进购物车。</text><van-button type="primary" size="small" custom-class="login-button" bindtap="goLogin">去登录</van-button></view>
+  <block wx:elif="{{loading}}"><view class="loading"><van-loading color="#c97982" vertical>正在查看购物车</van-loading></view></block>
+  <block wx:else>
+    <van-empty wx:if="{{!items.length}}" image="default" description="购物车还是空空的"/>
+    <view wx:for="{{items}}" wx:key="itemId" class="cart-item">
+      <image wx:if="{{item.imageUrl}}" class="cart-image" src="{{item.imageUrl}}" mode="aspectFill"/><view wx:else class="cart-placeholder"><van-icon name="shop-o" size="32px" color="#dfa0a8"/></view>
+      <view class="cart-main"><text class="cart-name">{{item.name}}</text><text class="cart-desc">{{item.description || '一份专属的心意'}}</text><text class="cart-price">{{item.subtotal}} 积分</text></view>
+      <view class="cart-control"><van-stepper value="{{item.quantity}}" min="1" max="99" integer bind:change="changeQuantity" data-id="{{item.itemId}}"/><van-icon name="delete-o" size="20px" color="#c98a91" bindtap="removeItem" data-id="{{item.itemId}}"/></view>
+    </view>
+    <view wx:if="{{items.length}}" class="cart-summary"><text>合计</text><text class="summary-points">{{totalPoints}} 积分</text></view>
+    <van-button wx:if="{{items.length}}" type="primary" block custom-class="checkout-button" bindtap="openCheckout">确认下单</van-button>
+  </block>
+
+  <van-popup show="{{showNote}}" round position="bottom" closeable bind:close="closeCheckout">
+    <view class="note-editor"><text class="note-title">给对方留一句话</text><van-field value="{{note}}" type="textarea" autosize maxlength="300" placeholder="例如：今天想吃你做的番茄炒蛋～" bind:change="onNoteChange"/><van-button type="primary" block loading="{{submitting}}" custom-class="confirm-order" bindtap="submitOrder">确认用积分下单</van-button></view>
+  </van-popup>
+</view>

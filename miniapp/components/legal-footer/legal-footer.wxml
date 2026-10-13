@@ -1,0 +1,5 @@
+<view class="legal-footer">
+  <text class="copyright">© {{year}} {{copyrightOwner}}</text>
+  <button class="filing" bindtap="showFiling">{{filingNumber}}</button>
+  <text class="query">备案查询：beian.miit.gov.cn</text>
+</view>

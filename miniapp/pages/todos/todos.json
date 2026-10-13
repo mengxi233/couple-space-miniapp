@@ -1,0 +1,14 @@
+{
+  "usingComponents": {
+    "page-header": "/components/page-header/page-header",
+    "app-tabbar": "/components/app-tabbar/app-tabbar",
+    "van-icon": "/miniprogram_npm/@vant/weapp/icon/index",
+    "van-button": "/miniprogram_npm/@vant/weapp/button/index",
+    "van-field": "/miniprogram_npm/@vant/weapp/field/index",
+    "van-uploader": "/miniprogram_npm/@vant/weapp/uploader/index",
+    "van-popup": "/miniprogram_npm/@vant/weapp/popup/index",
+    "van-swipe-cell": "/miniprogram_npm/@vant/weapp/swipe-cell/index",
+    "van-empty": "/miniprogram_npm/@vant/weapp/empty/index",
+    "van-loading": "/miniprogram_npm/@vant/weapp/loading/index"
+  }
+}

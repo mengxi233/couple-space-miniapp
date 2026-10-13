@@ -1,0 +1,15 @@
+page{background:#fff7f8;color:#493c40}
+.releases-page{padding:32rpx 32rpx calc(36rpx + env(safe-area-inset-bottom))}
+.section-title{display:block;margin:8rpx 6rpx 22rpx;font-size:33rpx;font-weight:600}
+.features-card,.release-card{padding:30rpx;border-radius:26rpx;background:#fff;box-shadow:0 10rpx 30rpx #b8737f0a}
+.feature-row{padding:18rpx 0;border-bottom:1rpx solid #f5ebee}.feature-row:first-child{padding-top:0}.feature-row:last-child{border:0;padding-bottom:0}
+.feature-title{display:block;font-size:27rpx;font-weight:500;color:#795963}
+.feature-description{display:block;margin-top:9rpx;font-size:24rpx;color:#947b83;line-height:1.8}
+.history-title{margin-top:44rpx;margin-bottom:10rpx}.history-help{display:block;margin:0 6rpx 26rpx;color:#9a8088;font-size:23rpx;line-height:1.7}
+.release-card{margin-bottom:24rpx}.release-head{display:flex;flex-wrap:wrap;align-items:center;gap:12rpx}
+.release-version{font-size:31rpx;font-weight:600}.current-badge{border-radius:999rpx;padding:5rpx 12rpx;background:#fff0f2;color:#b76d7b;font-size:20rpx}
+.release-date{margin-left:auto;font-size:21rpx;color:#a48c92}
+.release-title{display:block;margin-top:26rpx;font-size:29rpx;font-weight:500}.release-summary{display:block;margin-top:12rpx;font-size:24rpx;color:#947b83;line-height:1.7}
+.group-title{display:block;margin:24rpx 0 10rpx;color:#b36c7b;font-size:24rpx;font-weight:500}
+.change-row{display:flex;gap:12rpx;margin:9rpx 0;font-size:24rpx;line-height:1.8}.bullet{flex:none;color:#c97982}.change-text{flex:1;min-width:0;overflow-wrap:anywhere;color:#74636a}
+.release-note{display:block;margin-top:24rpx;padding:18rpx;border-radius:16rpx;background:#fff7f8;color:#a1848c;font-size:21rpx;line-height:1.8}

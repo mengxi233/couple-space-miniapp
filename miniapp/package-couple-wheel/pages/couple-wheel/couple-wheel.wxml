@@ -1,0 +1,90 @@
+<view wx:if="{{authorized}}" class="wheel-page">
+  <page-header back-label="应用" title="情侣转盘" subtitle="从轻松了解，到只属于两个人的深聊" bind:back="back" />
+
+  <view class="level-switch" role="tablist">
+    <view class="level-option {{level === 'basic' ? 'active' : ''}}" role="tab" aria-selected="{{level === 'basic'}}" data-level="basic" bindtap="chooseLevel">
+      <text>基础</text><text class="level-count">{{basicCount}} 题</text>
+    </view>
+    <view class="level-option {{level === 'private' ? 'active private' : ''}}" role="tab" aria-selected="{{level === 'private'}}" data-level="private" bindtap="chooseLevel">
+      <text>私密</text><text class="level-count">{{privateCount}} 题</text>
+    </view>
+  </view>
+
+  <view wx:if="{{level === 'private'}}" class="consent-note">
+    <text class="consent-heart">♥</text>
+    <text>仅限双方自愿的成年情侣。任何一方都可以跳过、暂停或结束。</text>
+  </view>
+
+  <view class="mode-switch" role="tablist">
+    <view class="mode-option {{mode === 'single' ? 'active' : ''}}" data-mode="single" bindtap="chooseMode">单机一起玩</view>
+    <view class="mode-option {{mode === 'online' ? 'active' : ''}}" data-mode="online" bindtap="chooseMode">联机同步</view>
+  </view>
+
+  <view class="wheel-card">
+    <view class="room-strip" wx:if="{{mode === 'online' && room}}">
+      <view><text class="room-label">房间</text><text class="room-code" bindtap="copyRoomCode">{{roomCode}}</text></view>
+      <text class="room-status">{{room.memberCount}} / 2 已加入</text>
+    </view>
+    <view class="canvas-wrap">
+      <canvas type="2d" id="coupleWheel" class="wheel-canvas"></canvas>
+      <view wx:if="{{!pageReady}}" class="canvas-loading">正在准备转盘…</view>
+    </view>
+
+    <view class="question-panel {{question ? 'has-question' : ''}}">
+      <block wx:if="{{question}}">
+        <text class="question-category">{{question.category}}</text>
+        <text class="question-text">{{question.text}}</text>
+        <view class="skip-link" bindtap="skipQuestion">这题先跳过</view>
+      </block>
+      <block wx:else>
+        <text class="question-placeholder">{{spinning ? '正在抽取今晚的问题…' : '转一次，抽出今晚的问题'}}</text>
+        <text class="question-hint">{{catalogReady ? '每轮 100 题不重复，不想回答时随时换下一道' : catalogSource}}</text>
+      </block>
+    </view>
+
+    <view class="spin-button {{spinning || (mode === 'online' && !room) ? 'disabled' : ''}}" role="button" bindtap="spin">
+      {{spinning ? '转动中…' : '转一下'}}
+    </view>
+  </view>
+
+  <view wx:if="{{mode === 'online' && !room}}" class="online-card">
+    <view class="card-heading">
+      <text class="card-title">两个人，同步抽同一道题</text>
+      <text class="card-desc">不用登录。创建房间后，把 6 位房间码发给对方。</text>
+    </view>
+    <view class="field-label">你的称呼（选填）</view>
+    <input class="field-input" maxlength="12" value="{{playerName}}" placeholder="例如：我 / TA" bindinput="inputName" />
+    <view class="create-button {{onlineBusy ? 'disabled' : ''}}" bindtap="createRoom">创建新房间</view>
+    <view class="divider"><text>或加入对方的房间</text></view>
+    <view class="join-row">
+      <input class="code-input" maxlength="6" value="{{joinCode}}" placeholder="输入 6 位房间码" bindinput="inputCode" />
+      <view class="join-button {{onlineBusy ? 'disabled' : ''}}" bindtap="joinRoom">加入</view>
+    </view>
+    <text class="room-rule">房间空闲 20 分钟会自动释放，最多同时 2 人。</text>
+  </view>
+
+  <view wx:if="{{mode === 'online' && room}}" class="online-card room-card">
+    <view class="room-head">
+      <view><text class="card-title">联机房间 {{room.id}}</text><text class="owner-badge" wx:if="{{room.isOwner}}">房主</text></view>
+      <view class="copy-action" bindtap="copyRoomCode">复制房间码</view>
+    </view>
+    <view class="member-list">
+      <view class="member" wx:for="{{room.members}}" wx:key="*this"><text class="member-dot"></text><text>{{item}}</text></view>
+      <view class="member waiting" wx:if="{{room.memberCount < 2}}"><text class="member-dot"></text><text>等待另一位加入</text></view>
+    </view>
+    <view class="room-actions">
+      <button class="share-button" open-type="share">分享给对方</button>
+      <view class="leave-button" bindtap="exitRoom">离开房间</view>
+    </view>
+  </view>
+
+  <view wx:if="{{history.length}}" class="history-card">
+    <view style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4rpx;"><text class="card-title">最近抽到</text><view style="padding:12rpx 4rpx 12rpx 20rpx;color:#b56d7c;font-size:22rpx;" role="button" bindtap="clearHistory">全部清除</view></view>
+    <view class="history-item" wx:for="{{history}}" wx:key="key">
+      <text class="history-category">{{item.category}}</text><text class="history-text">{{item.text}}</text>
+      <view class="history-delete" style="flex:none;width:52rpx;height:52rpx;display:flex;align-items:center;justify-content:center;margin-top:-8rpx;color:#b87986;font-size:34rpx;border-radius:50%;background:#fff4f6;" role="button" aria-label="删除这条记录并放回题库" data-key="{{item.key}}" bindtap="removeHistory">×</view>
+    </view>
+  </view>
+
+  <view class="catalog-link" bindtap="copyCatalogLink">查看完整 200 题数据源 · 复制网页地址</view>
+</view>

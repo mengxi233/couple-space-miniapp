@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict')
+const {elapsed,remaining}=require('../../services/anniversary-time')
+const item={elapsedFrom:'2025-10-21T00:00:00+08:00',elapsedBasis:'original'}
+const start=Date.parse(item.elapsedFrom)
+assert.equal(elapsed(item,start+86400000+3600000+60000+1000+7).text,'1天 01:01:01.007')
+assert.equal(elapsed(item,start-1).label,'距离开始还有')
+assert.equal(elapsed({...item,elapsedBasis:'latest'},start).label,'距最近一次已过去')
+assert.equal(elapsed({},start).text,'—')
+const upcoming={nextDate:'2026-10-21'}
+const target=Date.parse('2026-10-21T00:00:00+08:00')
+assert.equal(remaining(upcoming,target-86400001).text,'1天 00:00:00.001')
+assert.equal(remaining(upcoming,target-1).text,'0天 00:00:00.001')
+assert.equal(remaining(upcoming,target).text,'就是今天')
+assert.equal(remaining(upcoming,target+86399999).text,'就是今天')
+assert.equal(remaining(upcoming,target+86400000).text,'正在更新…')
+assert.equal(remaining({},target).text,'—')
+console.log('Anniversary elapsed-time tests passed: Beijing midnight, millisecond precision, future and unknown-year labels.')

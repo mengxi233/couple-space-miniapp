@@ -1,0 +1,10 @@
+<page-meta page-style="background:{{form.bg}};overflow:hidden;height:100%;" />
+<view class="screen" style="background:{{form.bg}}">
+  <canvas type="2d" id="board" class="canvas" bindtap="toggleControls" style="width:{{canvasWidth || 0}}px;height:{{canvasHeight || 0}}px;"/>
+  <view wx:if="{{controlsVisible}}" class="controls">
+    <button wx:if="{{form.direction !== 2}}" class="icon-button" bindtap="pause" aria-label="{{paused ? '播放' : '暂停'}}"><view wx:if="{{paused}}" class="play-icon"></view><view wx:else class="pause-icon"><view></view><view></view></view></button>
+    <button class="icon-button" bindtap="saveImage" loading="{{saving}}" disabled="{{saving || !ready}}" aria-label="保存图片到相册"><view wx:if="{{!saving}}" class="save-icon"><view class="save-arrow"></view><view class="save-tray"></view></view></button>
+  </view>
+  <view wx:if="{{error}}" class="error" bindtap="setup">{{error}}</view>
+  <view wx:elif="{{!ready}}" class="error">正在准备灯牌…</view>
+</view>

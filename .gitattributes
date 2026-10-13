@@ -1,0 +1,12 @@
+* text=auto
+*.js text eol=lf
+*.json text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.wxml text eol=lf
+*.wxss text eol=lf
+*.jpg binary
+*.png binary
+*.woff2 binary
+*.mp3 binary
+*.mp4 binary

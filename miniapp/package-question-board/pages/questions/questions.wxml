@@ -1,0 +1,31 @@
+<view class="question-page">
+  <page-header back-label="应用" title="问问对方" subtitle="有些话，从一个问题开始" bind:back="back"></page-header>
+  <scroll-view class="filter-row" scroll-x enable-flex>
+    <view wx:for="{{tabs}}" wx:key="value" class="filter-chip {{status === item.value ? 'active' : ''}}" data-value="{{item.value}}" bindtap="chooseStatus">{{item.label}}<text> {{item.count || 0}}</text></view>
+  </scroll-view>
+  <view class="question-summary"><view><text class="summary-title">双人问答留言板</text><text class="summary-desc">提问、认真回答，再把话慢慢聊完</text></view><view class="summary-count"><text>{{total}}</text> 个问题</view></view>
+  <view wx:if="{{loading}}" class="loading"><van-loading color="#c97982" vertical>正在打开留言板</van-loading></view>
+  <van-empty wx:elif="{{!questions.length}}" image="default" description="还没有问题，先问一件想知道的事吧" />
+  <view wx:else class="question-list">
+    <view wx:for="{{questions}}" wx:key="id" class="question-card" data-id="{{item.id}}" bindtap="openQuestion">
+      <view class="card-top"><text class="status status-{{item.status}}">{{item.statusText}}</text><text class="time">{{item.timeText}}</text></view>
+      <text class="question-title">{{item.title}}</text><text wx:if="{{item.body}}" class="question-body">{{item.body}}</text>
+      <image wx:if="{{item.images.length}}" class="cover" src="{{item.images[0]}}" mode="aspectFill" />
+      <view class="people"><text>{{item.authorName}} 问 {{item.recipientName}}</text><text wx:if="{{item.rating !== null}}" class="rating">{{item.rating}} / 10 分</text></view>
+      <view class="card-meta"><text><van-icon name="good-job-o" size="14px" /> {{item.likes}}</text><text><van-icon name="chat-o" size="14px" /> {{item.commentCount}}</text><text>{{item.hasAnswer ? '已收到回答' : '等待对方回答'}}</text></view>
+    </view>
+    <view wx:if="{{loadingMore}}" class="load-more">加载中…</view>
+  </view>
+  <view class="floating-add" bindtap="openCreate"><van-icon name="plus" color="#fff" size="25px" /></view>
+  <van-popup show="{{showEditor}}" round position="bottom" closeable bind:close="closeEditor">
+    <view class="editor-sheet">
+      <text class="sheet-title">问对方一个问题</text><text class="sheet-help">对方回答后，你们还可以继续评论和回复图片。</text>
+      <scroll-view class="editor-scroll" scroll-y>
+        <input class="title-input" value="{{editor.title}}" maxlength="160" placeholder="问题标题，例如：你最想一起去哪里？" bindinput="inputTitle" />
+        <textarea class="body-input" value="{{editor.body}}" maxlength="10000" auto-height placeholder="补充一点背景或你真正想知道的内容（可选）" bindinput="inputBody" />
+        <view class="upload-block"><text class="field-label">图片 · 最多 9 张</text><van-uploader file-list="{{editor.images}}" max-count="9" multiple size-type="{{['compressed']}}" disabled="{{uploading || saving}}" bind:after-read="addImages" bind:delete="removeImage" /><text wx:if="{{uploading}}" class="uploading">图片上传中…</text></view>
+      </scroll-view>
+      <van-button type="primary" round block loading="{{saving}}" disabled="{{uploading}}" bindtap="saveQuestion">{{uploading ? '图片上传中' : '发送给对方'}}</van-button>
+    </view>
+  </van-popup>
+</view>

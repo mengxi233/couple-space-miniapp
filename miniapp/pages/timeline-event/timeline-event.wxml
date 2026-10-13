@@ -1,0 +1,40 @@
+<view class="event-page">
+  <view class="back" bindtap="back"><van-icon name="arrow-left" /> 大事纪年表</view>
+  <text class="page-title">{{editing ? (id ? '编辑事件' : '记录大事') : '重要时刻'}}</text>
+  <view wx:if="{{loading}}" class="hint">正在加载…</view>
+  <view wx:elif="{{error}}" class="hint">{{error}}<van-button size="small" bindtap="load">重试</van-button></view>
+  <block wx:elif="{{canEdit}}">
+    <view wx:if="{{editing}}" class="card">
+      <picker mode="date" value="{{form.date}}" start="1000-01-01" end="2100-12-31" bindchange="dateChange"><view class="picker-row"><text>发生日期</text><text>{{form.date}} ›</text></view></picker>
+      <view class="picker-row"><picker mode="time" value="{{form.time || '12:00'}}" bindchange="timeChange"><text>具体时间　{{form.time || '可选，记不清可以留空'}} ›</text></picker><text wx:if="{{form.time}}" class="accent" bindtap="clearTime">清除</text></view>
+      <van-field label="标题" value="{{form.title}}" data-field="title" bind:change="input" maxlength="120" placeholder="给这个时刻起个名字" />
+      <van-field label="描述" value="{{form.description}}" data-field="description" bind:change="input" type="textarea" autosize maxlength="500" placeholder="时间线上显示的简短描述" />
+      <van-field label="详情" value="{{form.details}}" data-field="details" bind:change="input" type="textarea" autosize maxlength="5000" placeholder="写下完整的故事…" />
+      <view class="photos"><text class="label">照片 · 最多6张</text><van-uploader file-list="{{images}}" max-count="6" multiple size-type="{{['compressed']}}" disabled="{{uploading || saving}}" bind:after-read="addImage" bind:delete="removeImage" /><text wx:if="{{uploading}}" class="hint">图片上传中，请稍等…</text></view>
+      <van-field label="相关链接" value="{{form.linkUrl}}" data-field="linkUrl" bind:change="input" maxlength="1000" placeholder="https://…（可选）" />
+      <van-field label="视频链接" value="{{form.videoUrl}}" data-field="videoUrl" bind:change="input" maxlength="1000" placeholder="https://…（可选）" />
+      <view class="media-action"><van-button plain type="primary" round size="small" custom-style="width:auto;min-width:0;max-width:100%;height:36px;line-height:20px;padding:0 16px;margin:0;white-space:nowrap;" icon="video-o" disabled="{{uploading || saving}}" bindtap="addVideo">上传视频</van-button></view>
+      <text class="hint">单个视频不超过10MB，建议使用MP4 / H.264。上传后请保存事件；外部视频链接仍可使用。</text>
+      <view wx:if="{{form.videoUrl}}" class="media-action"><van-button plain type="primary" round size="small" custom-style="width:auto;min-width:0;max-width:100%;height:36px;line-height:20px;padding:0 16px;margin:0;white-space:nowrap;" disabled="{{uploading || saving}}" bindtap="clearVideo">移除视频</van-button></view>
+      <text class="hint">记录仅情侣空间成员可见；图片沿用现有图床，持有图片直链的人仍可访问。</text>
+      <view class="actions">
+        <view class="action-item"><van-button plain type="primary" round size="small" custom-style="width:auto;min-width:0;max-width:100%;height:36px;line-height:20px;padding:0 16px;margin:0;white-space:nowrap;" bindtap="cancel" disabled="{{saving || uploading}}">取消</van-button></view>
+        <view class="action-item"><van-button type="primary" round size="small" custom-style="width:auto;min-width:0;max-width:100%;height:36px;line-height:20px;padding:0 16px;margin:0;white-space:nowrap;" bindtap="save" loading="{{saving}}" disabled="{{uploading}}">保存事件</van-button></view>
+      </view>
+    </view>
+    <view wx:else class="card">
+      <text class="date">{{form.date}} {{form.time}}</text><text class="event-title">{{form.title}}</text>
+      <text wx:if="{{form.description}}" class="description">{{form.description}}</text>
+      <text wx:if="{{form.details}}" class="details">{{form.details}}</text>
+      <view class="photo-grid"><image wx:for="{{images}}" wx:key="url" src="{{item.url}}" mode="aspectFill" lazy-load data-index="{{index}}" bindtap="preview" /></view>
+      <view wx:if="{{form.linkUrl}}" class="link-card" data-field="linkUrl" bindtap="copy"><van-icon name="link-o" /><view><text>相关链接 · 点击复制</text><text class="url">{{form.linkUrl}}</text></view></view>
+      <view wx:if="{{form.videoUrl && !playingVideo}}" class="media-action"><van-button plain type="primary" round size="small" custom-style="width:auto;min-width:0;max-width:100%;height:36px;line-height:20px;padding:0 16px;margin:0;white-space:nowrap;" icon="play-circle-o" bindtap="playVideo">播放视频</van-button></view>
+      <video wx:if="{{form.videoUrl && playingVideo}}" class="event-video" src="{{form.videoUrl}}" autoplay controls object-fit="contain" binderror="videoError" />
+      <view wx:if="{{form.videoUrl}}" class="link-card" data-field="videoUrl" bindtap="copy"><van-icon name="play-circle-o" /><view><text>复制视频链接 · 无法播放时在浏览器打开</text><text class="url">{{form.videoUrl}}</text></view></view>
+      <view class="actions">
+        <view class="action-item"><van-button plain type="danger" round size="small" custom-style="width:auto;min-width:0;max-width:100%;height:36px;line-height:20px;padding:0 16px;margin:0;white-space:nowrap;" icon="delete-o" bindtap="remove" loading="{{saving}}">删除</van-button></view>
+        <view class="action-item"><van-button type="primary" round size="small" custom-style="width:auto;min-width:0;max-width:100%;height:36px;line-height:20px;padding:0 16px;margin:0;white-space:nowrap;" icon="edit" bindtap="edit" disabled="{{saving}}">编辑事件</van-button></view>
+      </view>
+    </view>
+  </block>
+</view>

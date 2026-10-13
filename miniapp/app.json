@@ -1,0 +1,59 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/menu/menu",
+    "pages/todos/todos",
+    "pages/apps/apps",
+    "pages/anniversaries/anniversaries",
+    "pages/decision/decision",
+    "pages/lightboard/lightboard",
+    "pages/lightboard-room/lightboard-room",
+    "pages/lightboard-admin/lightboard-admin",
+    "pages/lightboard-stage/lightboard-stage",
+    "pages/lightboard-show/lightboard-show",
+    "pages/timeline/timeline",
+    "pages/timeline-export/timeline-export",
+    "pages/timeline-event/timeline-event",
+    "pages/cart/cart",
+    "pages/orders/orders",
+    "pages/notifications/notifications",
+    "pages/profile/profile",
+    "pages/about/about",
+    "pages/releases/releases",
+    "pages/profile-edit/profile-edit",
+    "pages/login/login"
+  ],
+  "subpackages": [
+    {
+      "root": "package-soundboard",
+      "name": "soundboard",
+      "pages": [
+        "pages/soundboard/soundboard"
+      ]
+    },
+    {
+      "root": "package-couple-wheel",
+      "name": "couple-wheel",
+      "pages": [
+        "pages/couple-wheel/couple-wheel"
+      ]
+    },
+    {
+      "root": "package-question-board",
+      "name": "question-board",
+      "pages": [
+        "pages/questions/questions",
+        "pages/detail/detail"
+      ]
+    }
+  ],
+  "usingComponents": { "progressive-image": "/components/progressive-image/progressive-image", "page-header": "/components/page-header/page-header" },
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "style": "v2",
+  "renderer": "webview",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

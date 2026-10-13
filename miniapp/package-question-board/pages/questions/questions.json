@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "问问对方",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "van-icon": "/miniprogram_npm/@vant/weapp/icon/index",
+    "van-button": "/miniprogram_npm/@vant/weapp/button/index",
+    "van-popup": "/miniprogram_npm/@vant/weapp/popup/index",
+    "van-uploader": "/miniprogram_npm/@vant/weapp/uploader/index",
+    "van-loading": "/miniprogram_npm/@vant/weapp/loading/index",
+    "van-empty": "/miniprogram_npm/@vant/weapp/empty/index"
+  }
+}

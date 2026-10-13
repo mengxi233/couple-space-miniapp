@@ -1,0 +1,4 @@
+.legal-footer{padding:40rpx 0 12rpx;text-align:center;color:#907b7e;font-size:21rpx;line-height:1.7}
+.copyright,.query{display:block}.query{font-size:19rpx}
+.filing{display:inline-block;width:auto;max-width:100%;margin:0;padding:12rpx 8rpx;background:transparent;border:0;border-radius:0;color:#996c74;font-size:22rpx;line-height:1.6;white-space:normal;word-break:break-all}
+.filing::after{border:0}

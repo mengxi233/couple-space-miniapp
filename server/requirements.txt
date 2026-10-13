@@ -1,0 +1,11 @@
+Flask==3.1.1
+flask-cors==6.0.0
+Flask-SQLAlchemy==3.1.1
+gunicorn==23.0.0
+itsdangerous==2.2.0
+lunar_python==1.4.8
+PyMySQL==1.1.1
+python-dotenv==1.1.0
+requests==2.32.4
+SQLAlchemy==2.0.41
+Werkzeug==3.1.3

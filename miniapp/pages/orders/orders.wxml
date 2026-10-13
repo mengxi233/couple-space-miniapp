@@ -1,0 +1,29 @@
+<view class="orders-page">
+  <view class="page-head"><van-icon name="arrow-left" size="23px" color="#6e555a" bindtap="closePage"/><view><text class="eyebrow">OUR ORDERS</text><text class="title">订单记录</text></view><view class="head-spacer"/></view>
+  <view class="tabs"><text class="tab {{activeTab === 'all' ? 'active' : ''}}" data-tab="all" bindtap="switchTab">全部</text><text class="tab {{activeTab === 'active' ? 'active' : ''}}" data-tab="active" bindtap="switchTab">进行中</text><text class="tab {{activeTab === 'completed' ? 'active' : ''}}" data-tab="completed" bindtap="switchTab">已完成</text></view>
+  <view wx:if="{{loading}}" class="loading"><van-loading color="#c97982" vertical>正在整理订单</van-loading></view>
+  <van-empty wx:elif="{{!filteredOrders.length}}" image="default" description="还没有订单记录"/>
+  <view wx:else class="order-list">
+    <view wx:for="{{filteredOrders}}" wx:key="id" class="order-card" data-id="{{item.id}}" bindtap="openDetail">
+      <view class="order-head"><text class="order-no">#{{item.id}}</text><van-tag wx:if="{{item.status === 'completed'}}" type="success">{{item.statusText}}</van-tag><van-tag wx:elif="{{item.status === 'cancelled'}}" type="default">{{item.statusText}}</van-tag><van-tag wx:else type="primary">{{item.statusText}}</van-tag></view>
+      <text class="order-date">{{item.dateText}}</text><text class="order-note" wx:if="{{item.note}}">“{{item.note}}”</text><view class="order-foot"><text>{{item.isReceiver ? '收到的心意' : '我点的美味'}}</text><text class="order-total">{{item.totalPoints}} 积分</text></view>
+    </view>
+  </view>
+
+  <van-popup show="{{showDetail}}" round position="bottom" closeable bind:close="closeDetail">
+    <scroll-view wx:if="{{selectedOrder}}" class="order-detail" scroll-y>
+      <view class="detail-order-head"><text class="detail-title">订单 #{{selectedOrder.id}}</text><van-tag type="primary">{{selectedOrder.statusText}}</van-tag></view>
+      <text class="detail-date">{{selectedOrder.dateText}}</text>
+      <text class="detail-note" wx:if="{{selectedOrder.note}}">给对方的话：{{selectedOrder.note}}</text>
+      <view class="order-role-hint">{{selectedOrder.isReceiver ? (selectedOrder.status === 'pending' ? '这是对方送来的订单，准备好后开始制作吧' : '这份订单由你来完成') : (selectedOrder.status === 'pending' ? '订单已送达，等待对方接单' : '对方正在为你准备这份订单')}}</view>
+      <view class="detail-items"><view wx:for="{{selectedOrder.items}}" wx:key="itemId" class="detail-item" data-item-id="{{item.itemId}}" bindtap="openMenuItem"><text>{{item.itemName}} × {{item.quantity}}</text><text>{{item.unitPrice * item.quantity}} 积分</text></view><view class="detail-total"><text>合计</text><text>{{selectedOrder.totalPoints}} 积分</text></view></view>
+      <view class="status-actions"><van-button wx:if="{{selectedOrder.canCook}}" type="primary" size="small" data-status="cooking" bindtap="updateStatus">接单并开始制作</van-button><van-button wx:if="{{selectedOrder.canComplete}}" type="primary" size="small" data-status="completed" bindtap="updateStatus">完成这份心意</van-button><van-button wx:if="{{selectedOrder.canCancel}}" type="default" size="small" data-status="cancelled" bindtap="updateStatus">取消订单</van-button></view>
+      <view wx:if="{{selectedOrder.status === 'completed'}}" class="review-section">
+        <view class="review-head"><text class="review-title">完成记录</text><text class="review-hint">{{selectedOrder.canReview ? '做饭的一方可以留下照片和评价' : '完成记录由接单的一方添加'}}</text></view>
+        <view wx:if="{{selectedOrder.hasReview}}" class="review-display"><text wx:if="{{selectedOrder.review.content}}" class="review-content">{{selectedOrder.review.content}}</text><image wx:if="{{selectedOrder.review.imageUrl}}" class="review-image" src="{{selectedOrder.review.imageUrl}}" mode="aspectFill"/></view>
+        <view wx:if="{{selectedOrder.canReview}}" class="review-compose"><van-field value="{{reviewText}}" type="textarea" autosize maxlength="2000" placeholder="写下这顿饭的味道…" bind:change="onReviewChange"/><van-uploader file-list="{{reviewImageList}}" max-count="1" preview-size="88px" upload-icon="photograph" bind:after-read="uploadReviewImage" bind:delete="deleteReviewImage"/><van-button type="primary" size="small" block loading="{{reviewSubmitting}}" bindtap="submitReview">保存完成记录</van-button></view>
+      </view>
+      <view class="detail-bottom-space"></view>
+    </scroll-view>
+  </van-popup>
+</view>

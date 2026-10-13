@@ -1,0 +1,25 @@
+<view class="releases-page">
+  <text class="section-title">一起记录，一起生活</text>
+  <view class="features-card">
+    <view wx:for="{{features}}" wx:key="title" class="feature-row">
+      <text class="feature-title">{{item.title}}</text>
+      <text class="feature-description">{{item.description}}</text>
+    </view>
+  </view>
+  <text class="section-title history-title">版本更新记录</text>
+  <text class="history-help">从新到旧，记录每次新增、优化和修复。</text>
+  <view wx:for="{{releases}}" wx:for-item="release" wx:key="version" class="release-card">
+    <view class="release-head">
+      <text class="release-version">v{{release.version}}</text>
+      <text wx:if="{{release.version === currentVersion}}" class="current-badge">当前版本</text>
+      <text class="release-date">{{release.date}}</text>
+    </view>
+    <text class="release-title">{{release.title}}</text>
+    <text class="release-summary">{{release.summary}}</text>
+    <text wx:if="{{release.added.length}}" class="group-title">新增功能</text>
+    <view wx:for="{{release.added}}" wx:for-item="entry" wx:key="*this" class="change-row"><text class="bullet">•</text><text class="change-text">{{entry}}</text></view>
+    <text wx:if="{{release.fixed.length}}" class="group-title">优化与修复</text>
+    <view wx:for="{{release.fixed}}" wx:for-item="entry" wx:key="*this" class="change-row"><text class="bullet">•</text><text class="change-text">{{entry}}</text></view>
+    <text wx:if="{{release.note}}" class="release-note">{{release.note}}</text>
+  </view>
+</view>

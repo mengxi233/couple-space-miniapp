@@ -1,0 +1,11 @@
+<view class="apps-page">
+  <page-header eyebrow="OUR LITTLE APPS" title="应用" subtitle="把生活里的小事，慢慢收藏" />
+  <view class="app-grid">
+    <view wx:for="{{apps}}" wx:key="id" class="app-card" data-id="{{item.id}}" bindtap="openApp">
+      <view class="app-icon"><van-icon name="{{item.icon}}" size="27px" color="#c97982" /></view>
+      <view class="app-info"><text class="app-name">{{item.name}}</text><text class="app-desc">{{item.desc}}</text><text class="app-tag {{item.locked ? 'locked' : ''}}">{{item.displayTag}}</text></view>
+      <van-icon class="app-arrow" name="arrow" size="16px" color="#c9aaa4" />
+    </view>
+  </view>
+  <app-tabbar current="3" />
+</view>

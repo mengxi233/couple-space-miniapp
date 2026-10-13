@@ -1,0 +1,33 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Node / WeChat DevTools
+node_modules/
+miniapp/project.private.config.json
+miniapp/.idea/
+
+# Runtime data and uploads
+data/
+server/data/
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

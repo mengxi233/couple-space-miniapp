@@ -1,0 +1,11 @@
+<page-meta page-style="background:{{room.config.bg || '#000000'}};overflow:hidden;"/>
+<view class="screen"><canvas type="2d" id="joinedBoard" class="canvas" style="width:{{width || 0}}px;height:{{height || 0}}px" bindtap="togglePanel"/>
+ <scroll-view wx:if="{{panel}}" scroll-y class="panel"><text>{{room.mode==='extend'?'拼接延长':'同步播放'}} · 第 {{screenIndex}} 号屏幕</text><text class="hint">{{observing?'管理员旁观，不占席位，不修改播放或准备状态。':'先按编号摆放手机，所有人校准后再点击准备。'}}点击画布隐藏/显示面板。</text>
+ <picker wx:if="{{observing && screenOptions.length}}" range="{{screenOptions}}" value="{{watchIndex}}" bindchange="watchScreen"><view class="row">查看屏幕：{{screenOptions[watchIndex]}} ›</view></picker>
+ <block wx:if="{{!observing && room.mode==='extend'}}"><text>缩放 {{scale}}%</text><slider min="50" max="150" value="{{scale}}" data-key="scale" bindchange="calibration" activeColor="#c97982"/><text>上下位置 {{offset}}</text><slider min="-100" max="100" value="{{offset}}" data-key="offset" bindchange="calibration" activeColor="#c97982"/><text>右侧边框间隙 {{gap}}</text><slider min="0" max="100" value="{{gap}}" data-key="gap" bindchange="calibration" activeColor="#c97982"/></block>
+ <button wx:if="{{!observing}}" disabled="{{busy || !imageReady || !clockReady}}" bindtap="ready">{{selfReady?'已准备 · 重新确认':'确认参数 · 准备'}}</button>
+ <view wx:for="{{room.members}}" wx:key="uid" class="row"><text>{{index+1}} · {{item.name}}</text><text>{{item.ready?'已准备':'待确认'}}</text></view>
+ <block wx:if="{{isOwner}}"><button disabled="{{busy}}" bindtap="play">统一播放 / 继续</button><button disabled="{{busy}}" bindtap="pause">统一暂停</button></block>
+ <text class="hint">参数或排序改变后需全员重新准备。同步误差估计 ±{{uncertainty}}ms，不保证硬件级无缝拼接。</text><text wx:if="{{error}}" class="hint error">{{error}}</text><button bindtap="retry">重新连接</button>
+ </scroll-view><view wx:if="{{status}}" class="state">{{status}}</view>
+</view>

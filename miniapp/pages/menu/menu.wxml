@@ -1,0 +1,61 @@
+<view class="menu-page">
+  <page-header eyebrow="OUR MENU" title="爱心菜单" subtitle="今天想吃哪一道？">
+    <view slot="actions" class="head-actions">
+      <view wx:if="{{canEdit}}" class="head-action icon-only" bindtap="openAddDish"><van-icon name="edit" size="25px" color="#c97982"/></view>
+      <view class="head-action icon-only" bindtap="showOrders"><van-icon name="orders-o" size="25px" color="#c97982"/></view>
+      <view class="cart-action" bindtap="showCart"><van-icon name="shopping-cart-o" size="27px" color="#c97982"/><text class="cart-badge" wx:if="{{cartCount}}">{{cartCount}}</text></view>
+    </view>
+  </page-header>
+
+  <van-search value="{{search}}" placeholder="搜索想吃的菜" background="transparent" shape="round" bind:change="onSearch" bind:search="onSearchSubmit"/>
+
+  <view class="menu-content">
+    <scroll-view class="category-list" scroll-y>
+      <text class="category {{activeCategory === '全部' ? 'active' : ''}}" data-category="全部" bindtap="selectCategory">全部</text>
+      <text wx:for="{{categories}}" wx:key="*this" class="category {{activeCategory === item ? 'active' : ''}}" data-category="{{item}}" bindtap="selectCategory">{{item}}</text>
+    </scroll-view>
+    <scroll-view class="dish-list" scroll-y>
+      <view wx:if="{{loading}}" class="loading"><van-loading color="#c97982" size="24px" vertical>正在准备菜单</van-loading></view>
+      <block wx:else>
+        <view wx:for="{{items}}" wx:key="id" class="dish-card" data-id="{{item.id}}" bindtap="openDetail">
+          <image wx:if="{{item.imageUrl}}" class="dish-image" src="{{item.imageUrl}}" mode="aspectFill"/>
+          <view wx:else class="dish-placeholder"><van-icon name="shop-o" color="#e2a4ac" size="42px"/></view>
+          <view class="dish-body">
+            <view class="dish-name-row"><text class="dish-name">{{item.name}}</text><view class="dish-actions"><van-icon wx:if="{{canEdit}}" name="edit" color="#c97982" size="18px" catchtap="editDish" data-id="{{item.id}}"/><van-icon name="like-o" color="#d07f89" size="20px" catchtap="like" data-id="{{item.id}}"/></view></view>
+            <text class="dish-desc">{{item.description || '等你来定义这道美味'}}</text>
+            <view class="dish-meta"><text class="sales">销量 {{item.sales || 0}}</text><text class="likes">♡ {{item.likes || 0}}</text></view>
+            <view class="dish-foot"><text class="price">{{item.pointsPrice || 0}} 积分</text><view class="plus" catchtap="addCart" data-id="{{item.id}}"><van-icon name="plus" color="#fff" size="17px"/></view></view>
+          </view>
+        </view>
+        <van-empty wx:if="{{!items.length}}" image="default" description="还没有菜品，先添加一道喜欢的吧"/>
+      </block>
+    </scroll-view>
+  </view>
+
+  <van-popup show="{{showDetail}}" round position="bottom" closeable bind:close="closeDetail">
+    <view wx:if="{{selectedItem}}" class="dish-detail">
+      <image wx:if="{{selectedItem.imageUrl}}" class="detail-image" src="{{selectedItem.imageUrl}}" mode="aspectFill"/>
+      <view wx:else class="detail-placeholder"><van-icon name="shop-o" color="#e2a4ac" size="60px"/></view>
+      <text class="detail-name">{{selectedItem.name}}</text>
+      <view class="detail-tags"><van-tag type="primary" plain>{{selectedItem.category}}</van-tag><text class="detail-price">{{selectedItem.pointsPrice || 0}} 积分</text></view>
+      <text class="detail-description">{{selectedItem.description || '还没有写下这道菜的介绍。'}}</text>
+      <view class="detail-stats"><text>销量 {{selectedItem.sales || 0}}</text><text>喜欢 {{selectedItem.likes || 0}}</text></view>
+      <view class="detail-buy"><van-stepper value="{{detailQuantity}}" min="1" max="99" integer bind:change="onDetailQuantityChange"/><van-button type="primary" block custom-class="detail-add" bindtap="addSelectedToCart">放入购物车</van-button></view>
+      <van-button wx:if="{{canEdit}}" type="default" block custom-class="detail-edit" data-id="{{selectedItem.id}}" bindtap="editDish">编辑菜品</van-button><van-button wx:if="{{canEdit}}" type="default" block custom-class="detail-delete" data-id="{{selectedItem.id}}" bindtap="deleteDish">删除菜品</van-button>
+    </view>
+  </van-popup>
+
+  <van-popup show="{{showDishForm}}" round position="bottom" closeable bind:close="closeDishForm">
+    <view class="dish-form">
+      <text class="form-title">添加一道心爱料理</text>
+      <van-field value="{{dishForm.name}}" label="菜品名" placeholder="例如：番茄炒蛋" maxlength="120" bind:change="onDishNameChange"/>
+      <van-field value="{{dishForm.category}}" label="分类" placeholder="荤菜 / 素菜 / 汤品 / 其他" maxlength="60" bind:change="onDishCategoryChange"/>
+      <van-field value="{{dishForm.description}}" label="介绍" type="textarea" autosize placeholder="写下这道菜的味道" maxlength="500" bind:change="onDishDescriptionChange"/>
+      <van-field value="{{dishForm.pointsPrice}}" label="积分" type="number" placeholder="0" maxlength="8" bind:change="onDishPriceChange"/>
+      <view class="image-field"><text class="field-label">菜品图片</text><van-uploader file-list="{{dishImageList}}" max-count="1" preview-size="96px" upload-icon="photograph" bind:after-read="uploadDishImage" bind:delete="deleteDishImage"/><text class="form-hint">可以上传一张菜品照片，也可以在下方填写图片地址。</text></view>
+      <van-field value="{{dishForm.imageUrl}}" label="图片地址" placeholder="可选，填写可访问的图片地址" maxlength="500" bind:change="onDishImageChange"/>
+      <van-button type="primary" block loading="{{submitting}}" custom-class="save-dish" bindtap="submitDish">保存菜品</van-button>
+    </view>
+  </van-popup>
+  <app-tabbar current="1"/>
+</view>

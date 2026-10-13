@@ -1,0 +1,50 @@
+<view class="detail-page">
+  <page-header back-label="问问对方" title="问题详情" bind:back="navigateBack"></page-header>
+  <view wx:if="{{loading}}" class="loading"><van-loading color="#c97982" vertical>正在加载</van-loading></view>
+  <block wx:elif="{{question}}">
+    <view class="question-card main-card">
+      <view class="question-head"><text class="status status-{{question.status}}">{{statusLabels[question.status]}}</text><text class="time">{{question.timeText}}</text></view>
+      <text class="question-title">{{question.title}}</text><text wx:if="{{question.body}}" class="content-text">{{question.body}}</text>
+      <view wx:if="{{question.images.length}}" class="photo-grid"><image wx:for="{{question.images}}" wx:key="*this" class="photo" src="{{item}}" mode="aspectFill" data-source="question" data-index="{{index}}" bindtap="preview" /></view>
+      <view class="author-line"><text>{{question.authorName}} 问 {{question.recipientName}}</text></view>
+      <view class="reaction-row">
+        <view class="reaction {{question.myReaction === 1 ? 'active' : ''}}" data-type="question" data-id="{{question.id}}" data-value="1" bindtap="react"><van-icon name="good-job-o" /> {{question.likes}}</view>
+        <view class="reaction {{question.myReaction === -1 ? 'active negative' : ''}}" data-type="question" data-id="{{question.id}}" data-value="-1" bindtap="react"><van-icon name="good-job-o" class="down-icon" /> {{question.dislikes}}</view>
+        <view wx:if="{{question.isAuthor}}" class="owner-action" bindtap="toggleClosed">{{question.status === 'closed' ? '重新打开' : '结束问题'}}</view><view wx:if="{{question.isAuthor}}" class="owner-action danger" bindtap="deleteQuestion">删除</view>
+      </view>
+    </view>
+
+    <view wx:if="{{answer}}" class="answer-card">
+      <view class="section-head"><view><text class="section-kicker">ANSWER</text><text class="section-title">{{answer.authorName}} 的回答</text></view><view class="answer-tools"><text class="time">{{answer.timeText}}</text><view wx:if="{{answer.isAuthor && question.status !== 'closed'}}" class="edit-answer" bindtap="openAnswerEditor" aria-label="修改回答"><van-icon name="edit" size="19px" color="#c97982" /></view></view></view>
+      <text wx:if="{{answer.body}}" class="content-text">{{answer.body}}</text>
+      <view wx:if="{{answer.images.length}}" class="photo-grid"><image wx:for="{{answer.images}}" wx:key="*this" class="photo" src="{{item}}" mode="aspectFill" data-source="answer" data-index="{{index}}" bindtap="preview" /></view>
+      <view class="reaction-row"><view class="reaction {{answer.myReaction === 1 ? 'active' : ''}}" data-type="answer" data-id="{{answer.id}}" data-value="1" bindtap="react"><van-icon name="good-job-o" /> {{answer.likes}}</view><view class="reaction {{answer.myReaction === -1 ? 'active negative' : ''}}" data-type="answer" data-id="{{answer.id}}" data-value="-1" bindtap="react"><van-icon name="good-job-o" class="down-icon" /> {{answer.dislikes}}</view><text wx:if="{{answer.rating !== null}}" class="score-badge">{{answer.rating}} / 10 分</text></view>
+      <view wx:if="{{question.isAuthor}}" class="rating-box"><view class="rating-copy"><text>给回答评分</text><text class="score-number">{{score}} / 10</text></view><van-slider value="{{score}}" min="0" max="10" step="1" active-color="#c97982" inactive-color="#f2e1e4" bar-height="5px" bind:change="changeScore" /></view>
+    </view>
+
+    <view wx:if="{{question.isRecipient && question.status !== 'closed' && (!answer || showAnswerEditor)}}" class="compose-card answer-compose">
+      <view class="compose-head"><text class="compose-title">{{answer ? '修改我的回答' : '回答这个问题'}}</text><text wx:if="{{answer}}" class="cancel-edit" bindtap="closeAnswerEditor">取消</text></view>
+      <textarea class="compose-input" value="{{answerDraft.body}}" maxlength="10000" auto-height placeholder="认真写下你的回答…" bindinput="inputAnswer" />
+      <van-uploader file-list="{{answerDraft.images}}" max-count="9" multiple size-type="{{['compressed']}}" disabled="{{uploadingAnswer || savingAnswer}}" bind:after-read="addAnswerImages" bind:delete="removeAnswerImage" />
+      <van-button type="primary" round block loading="{{savingAnswer}}" disabled="{{uploadingAnswer}}" bindtap="saveAnswer">{{uploadingAnswer ? '图片上传中' : '保存回答'}}</van-button>
+    </view>
+
+    <view wx:if="{{answer}}" class="comments-section">
+      <view class="section-head"><view><text class="section-kicker">COMMENTS</text><text class="section-title">继续聊聊 · {{comments.length}}</text></view></view>
+      <view wx:if="{{!comments.length}}" class="comment-empty">还没有留言，回答之后也可以继续聊下去。</view>
+      <view wx:for="{{comments}}" wx:for-item="comment" wx:key="id" class="comment-card">
+        <view class="comment-avatar"><image wx:if="{{comment.authorAvatar}}" src="{{comment.authorAvatar}}" mode="aspectFill" /><text wx:else>{{comment.avatarLetter}}</text></view>
+        <view class="comment-main"><view class="comment-head"><text>{{comment.authorName}}</text><text class="time">{{comment.timeText}}</text></view><text wx:if="{{comment.replyName}}" class="reply-label">回复 {{comment.replyName}}</text><text wx:if="{{comment.body}}" class="comment-body">{{comment.body}}</text>
+          <view wx:if="{{comment.images.length}}" class="comment-photos"><image wx:for="{{comment.images}}" wx:for-item="photoItem" wx:key="*this" src="{{photoItem}}" mode="aspectFill" data-source="comment" data-id="{{comment.id}}" data-index="{{index}}" bindtap="preview" /></view>
+          <view class="comment-actions"><text data-id="{{comment.id}}" bindtap="replyComment">回复</text><text class="{{comment.myReaction === 1 ? 'active' : ''}}" data-type="comment" data-id="{{comment.id}}" data-value="1" bindtap="react">赞 {{comment.likes}}</text><text class="{{comment.myReaction === -1 ? 'active' : ''}}" data-type="comment" data-id="{{comment.id}}" data-value="-1" bindtap="react">踩 {{comment.dislikes}}</text><text wx:if="{{comment.isAuthor}}" class="danger" data-id="{{comment.id}}" bindtap="deleteComment">删除</text></view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{answer && question.status !== 'closed'}}" class="compose-card comment-compose">
+      <view wx:if="{{replyTo}}" class="replying"><text>回复 {{replyTo.name}}</text><text bindtap="cancelReply">取消</text></view>
+      <textarea class="compose-input compact" value="{{commentDraft.body}}" maxlength="3000" auto-height placeholder="写一条评论…" bindinput="inputComment" />
+      <view class="comment-compose-row"><van-uploader file-list="{{commentDraft.images}}" max-count="9" multiple size-type="{{['compressed']}}" preview-size="58px" disabled="{{uploadingComment || savingComment}}" bind:after-read="addCommentImages" bind:delete="removeCommentImage" /><van-button type="primary" round size="small" loading="{{savingComment}}" disabled="{{uploadingComment}}" bindtap="saveComment">发送</van-button></view>
+    </view>
+  </block>
+</view>

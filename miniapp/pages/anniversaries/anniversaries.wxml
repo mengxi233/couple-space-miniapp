@@ -1,0 +1,59 @@
+<view class="anniversary-page">
+  <page-header back-label="{{editing ? '纪念日' : '应用'}}" title="{{editing ? '编辑纪念日' : '纪念日'}}" subtitle="重要的日子，每一年都记得" bind:back="back" />
+  <view wx:if="{{!editing}}">
+    <view class="toolbar"><text>按下一次到来的时间排序</text><van-button custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" wx:if="{{canEdit}}" size="small" round type="primary" icon="plus" bindtap="add">新增</van-button></view>
+    <view wx:if="{{loading}}" class="hint">正在加载纪念日…</view>
+    <view wx:elif="{{error}}" class="card"><text>{{error}}</text><view class="actions"><van-button custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" size="small" plain round type="primary" bindtap="load">重试</van-button><van-button custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" size="small" round type="primary" bindtap="login">登录 / 激活</van-button></view></view>
+    <block wx:else>
+      <view wx:for="{{items}}" wx:key="id" class="card occasion" bindtap="edit" data-id="{{item.id}}">
+        <view class="occasion-top">
+        <view class="occasion-copy"><text class="title">{{item.title}}</text><text class="hint">{{item.dateLabel}}</text><text class="hint">下次：{{item.nextDate}}{{item.years ? ' · ' + item.years + '周年' : ''}}</text><text class="hint">{{item.enabled ? item.reminderTime + ' 提醒 · 北京时间' : '提醒已关闭'}}</text></view>
+        <view class="count"><text>{{item.daysUntil === 0 ? '今天' : item.daysUntil}}</text><text class="hint">{{item.daysUntil === 0 ? '就是这个日子' : '天后'}}</text><van-icon name="edit" size="17px" color="#c97982" /></view>
+        </view>
+        <view wx:if="{{item.eventKind !== 'birthday'}}" class="elapsed"><text class="hint">{{clocks[item.id].label || '距今已过去'}}</text><text class="elapsed-value">{{clocks[item.id].text || '正在计算…'}}</text><text wx:if="{{item.elapsedBasis === 'latest'}}" class="hint">未填写起始年份，按最近一次纪念日计算</text></view>
+        <view class="elapsed"><text class="hint">{{clocks[item.id].remaining.label || '距离下一次还有'}}</text><text class="elapsed-value">{{clocks[item.id].remaining.text || '正在计算…'}}</text></view>
+      </view>
+      <text wx:if="{{!items.length}}" class="hint">还没有纪念日，记录第一个重要的日子吧。</text>
+      <view wx:if="{{settingsLoaded && mail.wechat}}" class="card">
+        <text class="title">微信日程提醒</text>
+        <text class="hint">每同意订阅一次，可接收一条日程提醒，并非永久订阅。提醒按当前纪念日的时间和节点发送，邮件独立保留。</text>
+        <text class="hint">{{mail.wechat.enabled ? (mail.wechat.canAttempt ? '已登记订阅；实际可发送次数以微信为准。' : '暂无可用订阅记录，请重新订阅。') : '尚未开启微信提醒，需双方各自同意订阅。'}}</text>
+        <text wx:if="{{wechatStatus}}" class="hint">{{wechatStatus}}</text>
+        <text wx:if="{{!mail.wechat.configured}}" class="hint warning">微信通知服务尚未配置</text>
+        <view class="actions">
+          <van-button wx:if="{{mail.wechat.enabled}}" custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" size="small" plain round type="primary" disabled="{{subscribing}}" bindtap="disableWechat">停止微信提醒</van-button>
+          <van-button custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" size="small" round type="primary" loading="{{subscribing}}" disabled="{{!mail.wechat.configured}}" bindtap="subscribeWechat">订阅一条提醒</van-button>
+        </view>
+      </view>
+      <view wx:if="{{settingsLoaded}}" class="card">
+        <text class="title">我的邮件提醒</text>
+        <text class="hint">每人设置自己的收件邮箱；纪念日日期与时间由双方共同维护。</text>
+        <view class="row"><text>接收纪念日邮件</text><switch color="#c97982" checked="{{mail.emailEnabled}}" bindchange="emailEnabled" /></view>
+        <input class="input" value="{{mail.email}}" placeholder="你的收件邮箱，例如 name@qq.com" maxlength="200" bindinput="email" />
+        <text class="hint {{mail.smtpConfigured ? '' : 'warning'}}">{{mail.smtpConfigured ? 'SMTP 已配置，邮件送达仍取决于邮箱服务。' : '等待服务器配置 SMTP：当前不会发送邮件，请勿误认为已开启送达。'}}</text>
+        <view class="actions"><van-button custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" size="small" plain round type="primary" bindtap="notifications">查看站内通知</van-button><van-button custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" size="small" round type="primary" loading="{{savingMail}}" bindtap="saveMail">保存邮箱设置</van-button></view>
+        <view wx:for="{{mail.deliveries}}" wx:key="index" class="delivery"><text>{{item.title}}</text><text class="hint">{{item.statusLabel}} · {{item.createdAt}}</text></view>
+      </view>
+      <text class="hint policy">提醒默认在提前7天、3天、1天及当天10:00发出，服务器每5分钟检查。农历按每年实际日期换算，闰月生日在没有对应闰月的年份按普通月提醒；农历三十遇小月取月末，公历2月29日遇平年取2月28日。不会修改首页相恋计时起点。</text>
+    </block>
+  </view>
+  <view wx:else class="card editor">
+    <text class="label">名称</text><input class="input" value="{{form.title}}" bindinput="title" maxlength="80" />
+    <picker range="{{eventKindNames}}" value="{{eventKindIndex}}" bindchange="eventKind"><view class="row"><text>类型</text><text>{{eventKindNames[eventKindIndex]}} ›</text></view></picker>
+    <picker range="{{calendarNames}}" value="{{kindIndex}}" bindchange="kind"><view class="row"><text>历法</text><text>{{calendarNames[kindIndex]}} ›</text></view></picker>
+    <text class="label">起始年份（可留空，生日无需填写出生年）</text><input class="input" type="number" value="{{years}}" bindinput="year" maxlength="4" placeholder="例如 2025" />
+    <view class="date-row"><picker range="{{months}}" value="{{form.month-1}}" bindchange="month"><view class="input">{{form.month}}月 ›</view></picker><picker range="{{days}}" value="{{form.day-1}}" bindchange="day"><view class="input">{{form.day}}日 ›</view></picker></view>
+    <view wx:if="{{kindIndex === 1}}" class="row"><text>农历闰月</text><switch color="#c97982" checked="{{form.leapMonth}}" bindchange="leap" /></view>
+    <view class="row"><text>每年提醒双方</text><switch color="#c97982" checked="{{form.enabled}}" bindchange="enabled" /></view>
+    <picker mode="time" value="{{form.reminderTime}}" bindchange="time"><view class="row"><text>提醒时间 · 北京时间</text><text>{{form.reminderTime}} ›</text></view></picker>
+    <text class="label">提醒时间点</text>
+    <checkbox-group class="choices" bindchange="reminderDays">
+      <label><checkbox value="7" color="#c97982" checked="{{selectedDays['7']}}" />一周前</label>
+      <label><checkbox value="3" color="#c97982" checked="{{selectedDays['3']}}" />三天前</label>
+      <label><checkbox value="1" color="#c97982" checked="{{selectedDays['1']}}" />一天前</label>
+      <label><checkbox value="0" color="#c97982" checked="{{selectedDays['0']}}" />当天</label>
+    </checkbox-group>
+    <text class="hint">邮件需双方各自设置收件邮箱并开启。当天已过提醒时刻时会在下一轮检查补发；不会补发过去日期的提醒。同一纪念日、年度、收件人和提前天数不会重复创建提醒。</text>
+    <view class="actions"><van-button custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" wx:if="{{form.id}}" size="small" round plain type="danger" disabled="{{saving}}" bindtap="remove">删除</van-button><van-button custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" size="small" round plain type="primary" disabled="{{saving}}" bindtap="cancel">取消</van-button><van-button custom-style="width:auto;min-width:0;max-width:100%;height:34px;padding:0 12px;margin:0;white-space:nowrap;" size="small" round type="primary" loading="{{saving}}" bindtap="save">保存</van-button></view>
+  </view>
+</view>

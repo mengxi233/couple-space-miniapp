@@ -1,0 +1,27 @@
+<view class="profile-editor">
+  <view class="navigation" style="padding-top:{{statusBarHeight}}px"><view class="nav-content"><view class="back" bindtap="done"><van-icon name="arrow-left" size="22px" /></view><text>个人资料</text></view></view>
+  <text wx:if="{{loading}}" class="hint">正在加载…</text>
+  <view wx:elif="{{error}}" class="feedback"><text>{{error}}</text><van-button bindtap="load">重试</van-button></view>
+  <block wx:else>
+    <view class="profile-list">
+      <view class="profile-row avatar-row" bindtap="openAvatar"><text>头像</text><view class="row-value"><progressive-image class="avatar" src="{{avatarUrl || '/assets/previews/avatar-yu.jpg'}}" mode="aspectFill"/><van-icon name="arrow" size="18px" /></view></view>
+      <view class="profile-row" bindtap="openName"><text>名字</text><view class="row-value"><text class="name-value">{{nickname || '未设置'}}</text><van-icon name="arrow" size="18px" /></view></view>
+    </view>
+    <view class="save-area"><text class="hint">点击头像或名字修改，保存后生效。</text><van-button type="primary" block round loading="{{busy}}" disabled="{{busy}}" bindtap="save">保存资料</van-button></view>
+  </block>
+  <view wx:if="{{fromLogin}}" class="skip" bindtap="done">暂时跳过，进入我的</view>
+  <van-popup show="{{showAvatar}}" round position="bottom" bind:close="closeSheets" close-on-click-overlay="{{!busy}}" safe-area-inset-bottom>
+    <view class="sheet"><text class="sheet-title">{{fromLogin ? '登录成功，选择你的头像' : '修改头像'}}</text>
+      <text wx:if="{{fromLogin}}" class="hint">点击下方按钮确认使用微信头像，也可以取消并保留现有头像。</text>
+      <button class="source-button" open-type="chooseAvatar" bindchooseavatar="chooseAvatar" disabled="{{busy}}">选择微信头像</button>
+      <button class="source-button" bindtap="choosePhoto" disabled="{{busy}}">从相册选择 / 拍照</button>
+      <button class="source-button" bindtap="openQQ" disabled="{{busy}}">使用 QQ 头像</button>
+      <view wx:if="{{showQQ}}" class="qq-form"><input class="input" type="number" value="{{qq}}" maxlength="12" placeholder="输入 5 至 12 位 QQ 号" bindinput="qq"/><text class="hint">仅获取公开头像，不会登录 QQ。</text><van-button type="primary" block round loading="{{busy}}" disabled="{{busy}}" bindtap="fetchQQ">获取头像</van-button></view>
+      <text wx:if="{{busy && !showQQ}}" class="hint">正在上传头像…</text>
+      <button class="cancel-button" disabled="{{busy}}" bindtap="closeSheets">取消</button>
+    </view>
+  </van-popup>
+  <van-popup show="{{showName}}" round position="bottom" bind:close="closeSheets" safe-area-inset-bottom>
+    <view class="sheet"><text class="sheet-title">修改名字</text><input class="input" type="nickname" value="{{draftName}}" maxlength="20" placeholder="输入或选择微信昵称" bindinput="draftName" bindblur="draftName"/><text class="hint">最多 20 个字。</text><van-button type="primary" block round bindtap="confirmName">确定</van-button><button class="cancel-button" bindtap="closeSheets">取消</button></view>
+  </van-popup>
+</view>

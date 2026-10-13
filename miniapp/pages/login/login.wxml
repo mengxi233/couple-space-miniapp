@@ -1,0 +1,14 @@
+<view class="login-page">
+  <view class="login-mark"><van-icon name="like" color="#d07f89" size="48px" /></view>
+  <text class="title">进入伴侣空间</text>
+  <text class="desc">微信登录后，可以输入一次性邀请码绑定情侣身份。没有邀请码也可以先以访客身份看看公开内容。</text>
+  <van-button type="primary" round block color="#d07f89" loading="{{loggingIn}}" loading-text="登录中…" bindtap="login">微信登录</van-button>
+  <view class="guest" bindtap="enterGuest">先以访客身份看看</view>
+
+  <view wx:if="{{showInvite}}" class="invite-box">
+    <text class="invite-title">绑定情侣身份</text>
+    <text class="invite-desc">请输入 16 位激活码</text>
+    <van-field value="{{invite}}" maxlength="16" center clearable placeholder="请输入激活码" bind:change="onInviteInput" />
+    <van-button type="primary" round block color="#d07f89" bindtap="bindInvite">绑定情侣身份</van-button>
+  </view>
+</view>

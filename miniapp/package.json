@@ -1,0 +1,11 @@
+{
+  "name": "couple-space-miniapp",
+  "version": "1.6.1",
+  "private": true,
+  "scripts": {
+    "test": "node work/tests/run-all.js"
+  },
+  "dependencies": {
+    "@vant/weapp": "^1.11.7"
+  }
+}

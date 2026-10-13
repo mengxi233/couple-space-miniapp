@@ -1,0 +1,19 @@
+<view class="about-page">
+  <view class="app-identity">
+    <image class="app-icon" src="{{appInfo.icon}}" mode="aspectFill" />
+    <text class="app-name">{{appInfo.name}}</text>
+    <text class="app-version">Version {{currentVersion}}</text>
+    <text class="app-description">{{appInfo.description}}</text>
+  </view>
+  <view class="about-menu">
+    <view class="about-row" bindtap="openFeatures" hover-class="about-row-pressed" aria-role="button" aria-label="查看功能介绍与版本更新记录">
+      <text class="row-label">功能介绍</text>
+      <view class="row-trailing">
+        <text class="row-detail">更新记录</text>
+        <van-icon class="row-arrow" name="arrow" size="16px" color="#c4b4b8" />
+      </view>
+    </view>
+  </view>
+  <view class="version-summary"><text class="summary-label">{{currentVersion}} 更新</text><text class="summary-text">{{summary}}</text></view>
+  <view class="about-footer"><legal-footer /></view>
+</view>

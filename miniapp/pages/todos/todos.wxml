@@ -1,0 +1,84 @@
+<view class="todo-page">
+  <page-header eyebrow="OUR LITTLE TASKS" title="待办清单" subtitle="两个人的共同清单"></page-header>
+
+  <van-field class="todo-search" value="{{q}}" clearable placeholder="搜索标题或详情" left-icon="search" bind:change="onSearch" />
+  <scroll-view class="filter-scroll" scroll-x enable-flex>
+    <view wx:for="{{statusTabs}}" wx:key="value" class="filter-chip {{status === item.value ? 'active' : ''}}" data-value="{{item.value}}" bindtap="chooseStatus">{{item.label}}</view>
+    <view class="filter-chip {{dateScope === 'today' ? 'active' : ''}}" data-value="today" bindtap="chooseDateScope">今天</view>
+    <view class="filter-chip {{dateScope === 'upcoming' ? 'active' : ''}}" data-value="upcoming" bindtap="chooseDateScope">7天内</view>
+    <view class="filter-chip {{dateScope === 'overdue' ? 'active' : ''}}" data-value="overdue" bindtap="chooseDateScope">已逾期</view>
+    <view class="filter-chip {{priority === 'urgent' ? 'active' : ''}}" data-value="urgent" bindtap="choosePriority">紧急</view>
+    <view class="filter-chip {{priority === 'important' ? 'active' : ''}}" data-value="important" bindtap="choosePriority">重要</view>
+  </scroll-view>
+
+  <view class="shared-summary"><view class="summary-main"><view class="summary-icon"><van-icon name="friends-o" color="#c97982" size="22px" /></view><view><text class="summary-title">双人共同清单</text><text class="summary-subtitle">两个人都能看到，也都能一起完成</text></view></view><view class="summary-stats"><text><em>{{pendingCount}}</em> 待完成</text><text><em>{{completedCount}}</em> 已完成</text></view></view>
+
+  <scroll-view class="todo-list" scroll-y refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" refresher-background="#fff7f8" bindrefresherrefresh="onPullDownRefresh">
+    <view wx:if="{{loading}}" class="loading"><van-loading color="#c97982" vertical>正在加载待办</van-loading></view>
+    <view wx:elif="{{!todos.length}}" class="empty-card"><van-empty image="default" description="还没有待办，先写下一件小事吧" /></view>
+    <block wx:else>
+      <van-swipe-cell wx:for="{{todos}}" wx:key="id" right-width="148" async-close>
+        <view class="todo-card {{item.isCompleted ? 'completed' : ''}}" data-id="{{item.id}}" bindtap="openDetail" bindlongpress="openLongPress">
+          <view class="todo-check {{item.isCompleted ? 'checked' : ''}}" data-id="{{item.id}}" catchtap="toggleComplete"><van-icon wx:if="{{item.isCompleted}}" name="success" color="#fff" size="15px" /></view>
+          <view class="todo-main">
+            <view class="todo-title-row"><text class="todo-title">{{item.title}}</text><text wx:if="{{item.priority !== 'normal'}}" class="priority priority-{{item.priority}}">{{item.priority === 'urgent' ? '紧急' : '重要'}}</text></view>
+            <text wx:if="{{item.summary}}" class="todo-summary">{{item.summary}}</text>
+            <view class="todo-meta"><text class="todo-due {{item.overdue ? 'overdue' : ''}}">{{item.dueText}}</text><text wx:if="{{item.assigneeName}}">{{item.assigneeName}}</text><text wx:if="{{item.lastEditorName}}">{{item.lastEditorName}}编辑</text></view>
+            <view class="tag-row"><text wx:for="{{item.tags}}" wx:key="*this" class="tag">#{{item}}</text></view>
+          </view>
+          <van-icon name="arrow" color="#d1b8bb" size="16px" />
+        </view>
+        <view slot="right" class="swipe-actions"><view class="swipe-done" data-id="{{item.id}}" catchtap="swipeComplete">{{item.isCompleted ? '恢复' : '完成'}}</view><view class="swipe-delete" data-id="{{item.id}}" catchtap="swipeDelete">删除</view></view>
+      </van-swipe-cell>
+      <view wx:if="{{loadingMore}}" class="load-more">加载中…</view>
+      <view wx:elif="{{!hasMore && todos.length > 8}}" class="load-more">已经到底啦</view>
+    </block>
+  </scroll-view>
+
+  <view class="floating-add {{canEdit ? '' : 'disabled'}}" bindtap="openCreate"><van-icon name="plus" color="#fff" size="25px" /></view>
+  <app-tabbar current="2" />
+
+  <van-popup show="{{showDetail}}" round position="bottom" closeable bind:close="closeDetail">
+    <view class="detail-sheet" wx:if="{{selectedTodo}}">
+      <view class="sheet-title-row"><text class="sheet-title">{{selectedTodo.title}}</text><view class="sheet-actions"><van-icon name="edit" color="#c97982" size="22px" bindtap="openEditorFromDetail" /><van-icon name="delete-o" color="#c27480" size="22px" bindtap="actionDelete" /></view></view>
+      <view class="detail-badges"><text class="detail-badge {{selectedTodo.isCompleted ? 'done' : ''}}">{{selectedTodo.isCompleted ? '已完成' : '未完成'}}</text><text wx:if="{{selectedTodo.dueDate}}" class="detail-badge">{{selectedTodo.dueText}}</text><text wx:if="{{selectedTodo.assigneeName}}" class="detail-badge">{{selectedTodo.assigneeName}}</text></view>
+      <scroll-view class="detail-scroll" scroll-y><rich-text wx:if="{{selectedHtml}}" nodes="{{selectedHtml}}" class="markdown-view" /><text wx:else class="detail-empty">还没有填写详细说明</text><view wx:if="{{selectedTodo.attachments && selectedTodo.attachments.length}}" class="todo-photo-section"><text class="section-label">图片 · {{selectedTodo.attachments.length}} 张</text><view class="todo-photo-grid"><image wx:for="{{selectedTodo.attachments}}" wx:key="url" class="todo-photo" src="{{item.url}}" mode="aspectFill" data-index="{{index}}" bindtap="previewTodoImage" /></view></view><view class="detail-editor-line">最后编辑：{{selectedTodo.lastEditorName || selectedTodo.creatorName || '新朋友'}} · {{selectedTodo.updatedAt || selectedTodo.createdAt}}</view></scroll-view>
+      <van-button type="primary" round block bindtap="toggleComplete" data-id="{{selectedTodo.id}}">{{selectedTodo.isCompleted ? '恢复待办' : '标记完成'}}</van-button>
+      <button wx:if="{{selectedTodo.isPublic}}" class="todo-share-button" open-type="share" data-todo-id="{{selectedTodo.id}}"><van-icon name="share-o" color="#c27480" size="18px" />分享给好友</button>
+    </view>
+  </van-popup>
+
+  <van-popup show="{{showEditor}}" round position="bottom" closeable bind:close="closeEditor">
+    <view class="editor-sheet">
+      <view class="sheet-title-row"><text class="sheet-title">{{editingId ? '编辑待办' : '新增待办'}}</text><text class="preview-toggle" bindtap="togglePreview">{{editorPreview ? '返回编辑' : '预览'}}</text></view>
+      <scroll-view class="editor-scroll" scroll-y>
+        <van-field value="{{editor.title}}" label="标题" placeholder="例如：周末一起买菜" maxlength="160" bind:change="onTitleInput" />
+        <view wx:if="{{!editorPreview}}" class="markdown-editor">
+          <view class="markdown-toolbar-head"><text>详情排版</text><text class="selection-hint">选中文字后点击格式</text></view>
+          <scroll-view class="markdown-tools" scroll-x>
+            <view class="markdown-tool" data-format="bold" catchtouchend="formatEditor"><text class="tool-glyph">B</text><text>加粗</text></view>
+            <view class="markdown-tool" data-format="italic" catchtouchend="formatEditor"><text class="tool-glyph italic-glyph">I</text><text>斜体</text></view>
+            <view class="markdown-tool" data-format="strike" catchtouchend="formatEditor"><text class="tool-glyph">S</text><text>删除线</text></view>
+            <view class="markdown-tool" data-format="heading" catchtouchend="formatEditor"><text class="tool-glyph">H</text><text>标题</text></view>
+            <view class="markdown-tool" data-format="bullet" catchtouchend="formatEditor"><text class="tool-glyph">•</text><text>列表</text></view>
+            <view class="markdown-tool" data-format="checkbox" catchtouchend="formatEditor"><text class="tool-glyph">☑</text><text>待办项</text></view>
+            <view class="markdown-tool" data-format="quote" catchtouchend="formatEditor"><text class="tool-glyph">❝</text><text>引用</text></view>
+            <view class="markdown-tool" data-format="link" catchtouchend="formatEditor"><text class="tool-glyph">↗</text><text>链接</text></view>
+            <view class="markdown-tool" data-format="clear" catchtouchend="formatEditor"><text class="tool-glyph">×</text><text>清除格式</text></view>
+          </scroll-view>
+          <editor id="todo-editor" class="rich-editor" placeholder="写下详细说明，支持 Markdown 排版" show-img-toolbar show-img-size show-img-resize bindready="onEditorReady" bindinput="onEditorInput" />
+        </view>
+        <rich-text wx:if="{{editorPreview}}" nodes="{{editorHtml}}" class="markdown-view editor-preview" />
+        <view class="form-section"><text class="section-label">优先级</text><view class="choice-row"><text class="choice {{editor.priority === 'normal' ? 'selected' : ''}}" data-value="normal" bindtap="setPriority">普通</text><text class="choice important {{editor.priority === 'important' ? 'selected' : ''}}" data-value="important" bindtap="setPriority">重要</text><text class="choice urgent {{editor.priority === 'urgent' ? 'selected' : ''}}" data-value="urgent" bindtap="setPriority">紧急</text></view></view>
+        <view class="form-section"><text class="section-label">负责人</text><view class="choice-row"><text class="choice {{!editor.assigneeId ? 'selected' : ''}}" data-id="" bindtap="setAssignee">未指定</text><text class="choice {{editor.assigneeId == userId ? 'selected' : ''}}" data-id="{{userId}}" bindtap="setAssignee">我</text><text class="choice {{editor.assigneeId == partnerId ? 'selected' : ''}}" data-id="{{partnerId}}" bindtap="setAssignee">对方</text></view></view>
+        <view class="form-section date-row"><view><text class="section-label">截止日期</text><picker mode="date" value="{{editor.dueDate}}" start="2020-01-01" end="2100-12-31" bindchange="onDateChange"><text class="picker-value">{{editor.dueDate || '未设置'}}</text></picker></view><view><text class="section-label">时间</text><picker mode="time" value="{{editor.dueTime}}" bindchange="onTimeChange"><text class="picker-value">{{editor.dueTime || '可选'}}</text></picker></view></view>
+        <view class="form-section todo-photos-editor"><text class="section-label">图片（最多9张）</text><van-uploader file-list="{{editor.attachments}}" max-count="9" multiple size-type="{{['compressed']}}" disabled="{{uploading || saving}}" bind:after-read="uploadTodoImages" bind:delete="removeTodoImage" /><text class="form-hint">可从相册选择图片，每张不超过10MB。</text><text wx:if="{{uploading}}" class="form-hint uploading-hint">图片上传中，请稍候…</text></view>
+        <van-field value="{{editor.tagsText}}" label="标签" placeholder="用逗号分隔，例如：生活,采购" bind:change="onTagsInput" />
+        <view class="switch-line"><text>访客可见</text><switch checked="{{editor.isPublic}}" color="#c97982" bindchange="onPublicChange" /></view>
+      </scroll-view>
+      <van-button type="primary" round block loading="{{saving}}" disabled="{{uploading}}" bindtap="saveTodo">{{uploading ? '图片上传中' : '保存待办'}}</van-button>
+    </view>
+  </van-popup>
+
+  <van-popup show="{{showActions}}" round position="bottom" closeable bind:close="closeActions"><view class="actions-sheet"><text class="actions-title">待办操作</text><view class="actions-item" data-direction="-1" bindtap="moveSelected"><van-icon name="arrow-up" color="#c97982" size="20px" />上移</view><view class="actions-item" data-direction="1" bindtap="moveSelected"><van-icon name="arrow-down" color="#c97982" size="20px" />下移</view><view class="actions-item" bindtap="actionEdit"><van-icon name="edit" color="#c97982" size="20px" />编辑</view><view class="actions-item danger" bindtap="actionDelete"><van-icon name="delete-o" color="#c27480" size="20px" />删除</view><view class="actions-cancel" bindtap="closeActions">取消</view></view></van-popup>
+</view>
